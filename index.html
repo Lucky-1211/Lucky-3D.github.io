@@ -1,1 +1,1210 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D列印產品管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{
+  --bg:#0e0f11;--surface:#16181c;--s2:#1e2128;--border:#2a2d36;
+  --accent:#e8ff47;--a2:#47b8ff;--text:#e8eaf0;--dim:#7a7f8e;--dimmer:#444854;
+  --green:#4dff91;--orange:#ff9447;--red:#ff4747;--purple:#b47fff;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.app{display:flex;min-height:100vh}
 
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.logo-mark{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase}
+.logo-title{font-size:15px;font-weight:700;margin-top:4px;line-height:1.3}
+.nav{padding:16px 12px;flex:1}
+.nav-label{font-size:10px;letter-spacing:2px;color:var(--dimmer);text-transform:uppercase;padding:0 8px;margin-bottom:6px;margin-top:16px}
+.nb{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border:none;background:transparent;color:var(--dim);border-radius:var(--rs);cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s;text-align:left}
+.nb:hover{background:var(--s2);color:var(--text)}
+.nb.active{background:rgba(232,255,71,.1);color:var(--accent)}
+.ni{font-size:15px;width:18px;text-align:center}
+.nbadge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-family:'Space Mono',monospace;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;backdrop-filter:blur(10px)}
+.topbar-title{font-size:17px;font-weight:700}
+.topbar-actions{display:flex;gap:10px}
+.pi{padding:24px 28px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--rs);font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.bp{background:var(--accent);color:#0e0f11}.bp:hover{background:#d4ea30}
+.bs{background:var(--s2);color:var(--text);border:1px solid var(--border)}.bs:hover{border-color:var(--dim)}
+.bg{background:transparent;color:var(--dim);border:1px solid var(--border)}.bg:hover{color:var(--text);border-color:var(--dim)}
+.bd{background:rgba(255,71,71,.15);color:var(--red);border:1px solid rgba(255,71,71,.3)}
+.bo{background:rgba(255,148,71,.15);color:var(--orange);border:1px solid rgba(255,148,71,.3)}
+.bsm{padding:5px 10px;font-size:12px}
+
+/* PAGES */
+.page{display:none}.page.active{display:block;animation:fi .18s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;cursor:default}
+.sc.clickable{cursor:pointer;transition:all .15s}.sc.clickable:hover{border-color:var(--accent)}
+.sl{font-size:11px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.sv{font-family:'Space Mono',monospace;font-size:26px;font-weight:700}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.sw{position:relative;flex:1;min-width:200px}
+.sw input{width:100%;padding:9px 14px 9px 36px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
+.sw input:focus{border-color:var(--accent)}
+.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--dimmer);font-size:14px}
+.tf{display:flex;gap:6px;flex-wrap:wrap}
+.tp{padding:5px 12px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:var(--surface);color:var(--dim);cursor:pointer;transition:all .15s}
+.tp:hover{border-color:var(--dim);color:var(--text)}
+.tp.active{border-color:var(--accent);background:rgba(232,255,71,.1);color:var(--accent)}
+
+/* PRODUCT GRID */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .2s;position:relative}
+.pcard:hover{border-color:rgba(232,255,71,.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.cprev{height:160px;background:var(--s2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:pointer}
+.pholder{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--dimmer)}
+.pholder .icon{font-size:40px}
+.cbody{padding:14px}
+.cname{font-size:14px;font-weight:700;margin-bottom:4px;cursor:pointer}
+.cname:hover{color:var(--accent)}
+.cdesc{font-size:12px;color:var(--dim);line-height:1.5;margin-bottom:10px;min-height:36px}
+.cfooter{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.ctags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:500;background:var(--s2);color:var(--dim);border:1px solid var(--border)}
+.cacts{display:flex;gap:4px;padding:10px 14px 12px;border-top:1px solid var(--border);margin-top:4px}
+.cvbadge{font-family:'Space Mono',monospace;font-size:10px;color:var(--dimmer)}
+
+/* STATUS BADGE ON CARD */
+.cstatus{position:absolute;top:8px;left:8px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;z-index:2}
+.cs-done{background:rgba(77,255,145,.15);color:var(--green);border:1px solid rgba(77,255,145,.3)}
+.cs-fix{background:rgba(255,148,71,.15);color:var(--orange);border:1px solid rgba(255,148,71,.3)}
+.fix-badge{position:absolute;top:8px;right:8px;background:var(--orange);color:#000;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;z-index:2}
+
+/* VERSION SELECT */
+.vsel{background:var(--s2);border:1px solid var(--border);color:var(--text);font-size:11px;font-family:'Space Mono',monospace;padding:3px 6px;border-radius:4px;cursor:pointer;outline:none}
+.vsel:focus{border-color:var(--accent)}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.mo.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:90%;max-width:700px;max-height:90vh;overflow-y:auto}
+.modal-lg{max-width:840px}
+.mhdr{display:flex;align-items:flex-start;justify-content:space-between;padding:22px 24px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
+.mclose{background:var(--s2);border:none;color:var(--dim);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.mclose:hover{color:var(--text)}
+.mbody{padding:20px 24px}
+.mfoot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+/* FORM */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fi{display:flex;flex-direction:column;gap:6px}
+.fi.full{grid-column:1/-1}
+.fl{font-size:12px;color:var(--dim);font-weight:500}
+.fi input,.fi select,.fi textarea{padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--accent)}
+.fi select option{background:var(--s2)}
+.fi textarea{min-height:80px;resize:vertical;line-height:1.5}
+
+/* TAG INPUT */
+.tiw{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);min-height:42px;cursor:text;align-items:center}
+.tiw:focus-within{border-color:var(--accent)}
+.tchip{display:inline-flex;align-items:center;gap:4px;background:rgba(232,255,71,.1);border:1px solid rgba(232,255,71,.3);color:var(--accent);font-size:11px;padding:2px 8px;border-radius:4px}
+.tcr{background:none;border:none;color:var(--accent);cursor:pointer;font-size:14px;line-height:1;padding:0}
+.tii{background:transparent;border:none;outline:none;color:var(--text);font-size:13px;font-family:inherit;min-width:80px;flex:1}
+.tdd{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);position:absolute;top:calc(100% + 2px);left:0;right:0;z-index:300;max-height:180px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.tdi{padding:8px 12px;font-size:13px;cursor:pointer}.tdi:hover{background:var(--s2)}
+.tdn{color:var(--accent)}
+.tip{position:relative;flex:1;min-width:80px}
+
+/* STL */
+.d3w{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:12px}
+.stl-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--dimmer);background:rgba(0,0,0,.6);padding:2px 10px;border-radius:4px;pointer-events:none}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tbb{padding:8px 16px;font-size:13px;font-family:inherit;background:none;border:none;color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tbb.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tbp{display:none}.tbp.active{display:block}
+
+/* ORDERS TABLE */
+.ot{width:100%;border-collapse:collapse}
+.ot th{text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dimmer);padding:8px 12px;border-bottom:1px solid var(--border)}
+.ot td{padding:11px 12px;border-bottom:1px solid rgba(42,45,54,.5);font-size:13px;vertical-align:middle}
+.ot tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ORDER STATUS */
+.os{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.os::before{content:'';width:5px;height:5px;border-radius:50%;display:inline-block}
+.os-unread{background:rgba(255,71,71,.15);color:var(--red)}.os-unread::before{background:var(--red)}
+.os-received{background:rgba(232,255,71,.1);color:var(--accent)}.os-received::before{background:var(--accent)}
+.os-printing{background:rgba(71,184,255,.1);color:var(--a2)}.os-printing::before{background:var(--a2)}
+.os-done{background:rgba(77,255,145,.1);color:var(--green)}.os-done::before{background:var(--green)}
+.os-delivered{background:rgba(180,127,255,.15);color:var(--purple)}.os-delivered::before{background:var(--purple)}
+
+/* FIX REQUESTS */
+.fxi{background:rgba(255,148,71,.05);border:1px solid rgba(255,148,71,.2);border-radius:var(--rs);padding:10px 14px;font-size:12px;margin-bottom:8px}
+.fxh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.fxa{font-weight:700;color:var(--orange)}
+.fxd{color:var(--dimmer);font-size:11px}
+.fxt{color:var(--dim);line-height:1.5}
+.fxr{background:none;border:none;color:var(--dimmer);cursor:pointer;font-size:11px;margin-top:6px;padding:0}
+.fxr:hover{color:var(--green)}
+
+/* TODO ITEMS */
+.todo-section{margin-bottom:24px}
+.todo-title{font-size:13px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.todo-count{font-family:'Space Mono',monospace;font-size:11px;background:var(--s2);border:1px solid var(--border);padding:1px 8px;border-radius:10px;color:var(--dimmer)}
+.todo-list{display:flex;flex-direction:column;gap:8px}
+.todo-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s}
+.todo-item:hover{border-color:var(--dim)}
+.todo-icon{font-size:20px;flex-shrink:0}
+.todo-body{flex:1}
+.todo-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.todo-sub{font-size:11px;color:var(--dim)}
+.todo-meta{font-size:11px;color:var(--dimmer);text-align:right;flex-shrink:0}
+.todo-item.urgent{border-color:rgba(255,71,71,.3);background:rgba(255,71,71,.03)}
+.todo-item.urgent .todo-meta{color:var(--red);font-weight:600}
+
+/* SETTINGS */
+.stsec{margin-bottom:28px}
+.stitle{font-size:13px;font-weight:700;margin-bottom:12px}
+.slist{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.schip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:var(--s2);color:var(--text)}
+.sdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sdel{background:none;border:none;color:var(--dimmer);cursor:pointer;font-size:14px;padding:0;line-height:1}.sdel:hover{color:var(--red)}
+.ail{display:flex;gap:8px;align-items:center}.ail input{flex:1}
+input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-radius:var(--rs);background:none;cursor:pointer;padding:2px}
+
+/* DETAIL */
+.dmeta{display:flex;flex-direction:column;gap:0}
+.mr{display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}
+.mk{color:var(--dim)}.mv{font-weight:500}
+
+/* CHANGELOG */
+.clt{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dimmer);margin-bottom:10px}
+.cli{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:flex-start}
+.clv{font-family:'Space Mono',monospace;color:var(--accent);width:40px;flex-shrink:0}
+.cln{color:var(--dim);flex:1}
+.cld{color:var(--dimmer);white-space:nowrap}
+
+/* UPLOAD */
+.upz{border:2px dashed var(--border);border-radius:var(--r);padding:20px;text-align:center;color:var(--dim);font-size:13px;cursor:pointer;transition:all .2s;position:relative}
+.upz:hover,.upz.drag{border-color:var(--accent);color:var(--accent)}
+.upz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upi{font-size:28px;margin-bottom:8px}
+
+/* EMPTY */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--dimmer);gap:12px}
+.empty .icon{font-size:48px}
+.empty .ttl{font-size:16px;color:var(--dim);font-weight:600}
+.empty .sub{font-size:13px}
+
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.stl{font-size:14px;font-weight:700}
+.scnt{font-family:'Space Mono',monospace;font-size:11px;color:var(--dimmer);margin-left:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 18px;font-size:13px;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-left:3px solid var(--green)}
+.toast.info{border-left:3px solid var(--a2)}
+
+/* MAT-COLOR BINDINGS */
+.mcbind-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:10px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs)}
+.mcbind-mat{font-weight:600;min-width:60px;font-size:13px}
+.mcbind-colors{display:flex;flex-wrap:wrap;gap:5px;flex:1}
+.mcbind-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.mcbind-chip.selected{border-color:var(--accent);background:rgba(232,255,71,.1);color:var(--accent)}
+.ccdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+@media(max-width:700px){
+  .sidebar{width:60px}
+  .logo-title,.nb span:not(.ni),.nav-label{display:none}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr}.fi.full{grid-column:1}
+  .pi{padding:16px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">3DP MGR</div>
+    <div class="logo-title">列印產品管理</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-label">主選單</div>
+    <button class="nb active" id="nav-products" onclick="go('products')"><span class="ni">📦</span><span>產品庫</span></button>
+    <button class="nb" id="nav-todo" onclick="go('todo')"><span class="ni">✅</span><span>待辦事項</span><span class="nbadge" id="badge-todo" style="display:none"></span></button>
+    <button class="nb" id="nav-orders" onclick="go('orders')"><span class="ni">📋</span><span>列印紀錄</span><span class="nbadge" id="badge-unread" style="display:none"></span></button>
+    <div class="nav-label">工具</div>
+    <button class="nb" id="nav-neworder" onclick="go('neworder')"><span class="ni">🖨️</span><span>要列印</span></button>
+    <button class="nb" onclick="openNewProduct()"><span class="ni">➕</span><span>新增產品</span></button>
+    <button class="nb" id="nav-settings" onclick="go('settings')"><span class="ni">⚙️</span><span>設定</span></button>
+  </nav>
+</aside>
+
+<main class="main">
+
+<!-- ═══ PRODUCTS ═══ -->
+<div id="page-products" class="page active">
+  <div class="topbar">
+    <div class="topbar-title">產品庫</div>
+    <div class="topbar-actions"><button class="btn bp" onclick="openNewProduct()">＋ 新增產品</button></div>
+  </div>
+  <div class="pi">
+    <div class="stats-row">
+      <div class="sc"><div class="sl">總數</div><div class="sv" style="color:var(--accent)" id="st-total">0</div></div>
+      <div class="sc clickable" onclick="go('todo',{tab:'fix'})" title="點擊查看"><div class="sl">未讀需求</div><div class="sv" style="color:var(--red)" id="st-fix">0</div></div>
+      <div class="sc clickable" onclick="go('todo',{tab:'fix'})" title="點擊查看"><div class="sl">待修改</div><div class="sv" style="color:var(--orange)" id="st-pending">0</div></div>
+      <div class="sc clickable" onclick="go('todo',{tab:'print'})" title="點擊查看"><div class="sl">待列印</div><div class="sv" style="color:var(--a2)" id="st-print">0</div></div>
+    </div>
+    <div class="filter-bar">
+      <div class="sw"><span class="si">🔍</span><input type="text" placeholder="搜尋產品名稱..." id="search-input" oninput="renderProducts()"></div>
+      <div class="tf" id="tag-filter"></div>
+    </div>
+    <div class="sh"><div><span class="stl">所有產品</span><span class="scnt" id="pcnt"></span></div></div>
+    <div class="pgrid" id="pgrid"></div>
+  </div>
+</div>
+
+<!-- ═══ TODO ═══ -->
+<div id="page-todo" class="page">
+  <div class="topbar"><div class="topbar-title">待辦事項</div></div>
+  <div class="pi">
+    <div class="tabs">
+      <button class="tbb active" id="todo-tab-print" onclick="switchTodoTab('print')">🖨️ 待列印</button>
+      <button class="tbb" id="todo-tab-fix" onclick="switchTodoTab('fix')">🔧 待修改</button>
+    </div>
+    <div id="todo-print-panel"></div>
+    <div id="todo-fix-panel" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ═══ ORDERS ═══ -->
+<div id="page-orders" class="page">
+  <div class="topbar">
+    <div class="topbar-title">列印紀錄</div>
+    <div class="topbar-actions"><button class="btn bp" onclick="go('neworder')">＋ 要列印</button></div>
+  </div>
+  <div class="pi">
+    <div style="overflow-x:auto">
+      <table class="ot">
+        <thead><tr>
+          <th>產品</th><th>版本</th><th>顏色</th><th>材料</th><th>數量</th><th>備註</th><th>狀態</th><th>期限</th><th></th>
+        </tr></thead>
+        <tbody id="orders-tbody"></tbody>
+      </table>
+    </div>
+    <div id="orders-empty" class="empty" style="display:none">
+      <div class="icon">📋</div><div class="ttl">還沒有列印紀錄</div><div class="sub">點「要列印」新增一筆</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NEW ORDER ═══ -->
+<div id="page-neworder" class="page">
+  <div class="topbar"><div class="topbar-title">要列印</div></div>
+  <div class="pi" style="max-width:560px">
+    <div class="fg">
+      <div class="fi full">
+        <label class="fl">選擇產品 *</label>
+        <select id="op-product" onchange="onProductChange()">
+          <option value="">— 請選擇 —</option>
+        </select>
+      </div>
+      <div class="fi full">
+        <label class="fl">選擇版本</label>
+        <select id="op-ver"></select>
+        <div id="op-verhint" style="font-size:11px;color:var(--dimmer);margin-top:2px"></div>
+      </div>
+      <div class="fi">
+        <label class="fl">材料</label>
+        <select id="op-mat" onchange="onMatChange()"></select>
+      </div>
+      <div class="fi">
+        <label class="fl">顏色</label>
+        <select id="op-color"></select>
+      </div>
+      <div class="fi">
+        <label class="fl">數量（組）</label>
+        <input type="number" id="op-qty" value="1" min="1">
+      </div>
+      <div class="fi">
+        <label class="fl">期限</label>
+        <input type="date" id="op-date">
+      </div>
+      <div class="fi full">
+        <label class="fl">備註</label>
+        <textarea id="op-note" placeholder="例如：縮小5%、給XX客戶..."></textarea>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px">
+      <button class="btn bp" onclick="submitOrder()">送出</button>
+      <button class="btn bg" onclick="go('orders')">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS ═══ -->
+<div id="page-settings" class="page">
+  <div class="topbar"><div class="topbar-title">設定</div></div>
+  <div class="pi" style="max-width:600px">
+
+    <div class="stsec">
+      <div class="stitle">🎨 顏色管理</div>
+      <div class="slist" id="color-list"></div>
+      <div class="ail">
+        <input type="color" id="nc-hex" value="#ffffff">
+        <input type="text" id="nc-name" placeholder="顏色名稱（例如：珍珠白）" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none">
+        <button class="btn bs bsm" onclick="addColor()">新增</button>
+      </div>
+    </div>
+
+    <div class="stsec">
+      <div class="stitle">🧱 材料管理</div>
+      <div class="slist" id="mat-list"></div>
+      <div class="ail">
+        <input type="text" id="nm-name" placeholder="材料名稱（例如：PETG-CF）" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none">
+        <button class="btn bs bsm" onclick="addMat()">新增</button>
+      </div>
+    </div>
+
+    <div class="stsec">
+      <div class="stitle">🔗 材料↔顏色綁定</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:12px">選取每種材料可用的顏色，下單時會自動過濾</div>
+      <div id="mcbind-list"></div>
+    </div>
+
+    <div class="stsec">
+      <div class="stitle">🏷️ 標籤管理</div>
+      <div class="slist" id="tag-manage-list"></div>
+      <div class="ail">
+        <input type="text" id="nt-name" placeholder="標籤名稱" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none">
+        <button class="btn bs bsm" onclick="addTag()">新增</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ═══ DETAIL MODAL ═══ -->
+<div class="mo" id="modal-detail">
+  <div class="modal modal-lg">
+    <div class="mhdr">
+      <div>
+        <div style="font-size:18px;font-weight:700" id="d-name"></div>
+        <div style="font-size:12px;color:var(--dimmer);margin-top:2px" id="d-updated"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn bo bsm" onclick="openFixModal()">🔧 請求修改</button>
+        <button class="mclose" onclick="closeM('modal-detail')">✕</button>
+      </div>
+    </div>
+    <div class="mbody">
+      <div class="d3w" id="d-3d"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:var(--dim)">版本：</span>
+          <select class="vsel" id="d-vsel" onchange="switchDVer(this.value)"></select>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn bs bsm" id="d-dl" style="display:none" onclick="dlFromDetail()">⬇ 下載 STL</button>
+          <button class="btn bs bsm" id="d-edit">✏️ 編輯</button>
+          <button class="btn bg bsm" onclick="orderFromDetail()">🖨️ 要列印</button>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tbb active" onclick="switchMTab(this,'dt-info')">資訊</button>
+        <button class="tbb" onclick="switchMTab(this,'dt-log')">版本紀錄</button>
+        <button class="tbb" id="dt-fix-btn" onclick="switchMTab(this,'dt-fix')">修改請求</button>
+      </div>
+      <div class="tbp active" id="dt-info">
+        <div style="font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:14px" id="d-desc"></div>
+        <div id="d-meta"></div>
+      </div>
+      <div class="tbp" id="dt-log"><div id="d-log"></div></div>
+      <div class="tbp" id="dt-fix"><div id="d-fix-panel"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRODUCT FORM MODAL ═══ -->
+<div class="mo" id="modal-form">
+  <div class="modal">
+    <div class="mhdr">
+      <div style="font-size:16px;font-weight:700" id="form-title">新增產品</div>
+      <button class="mclose" onclick="closeM('modal-form')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fg">
+        <div class="fi full">
+          <label class="fl">產品名稱 *</label>
+          <input type="text" id="f-name" placeholder="例如：控制盒左側板">
+        </div>
+        <div class="fi full">
+          <label class="fl">說明</label>
+          <textarea id="f-desc" placeholder="用途、對應客戶…"></textarea>
+        </div>
+        <div class="fi full">
+          <label class="fl">標籤</label>
+          <div class="tiw" id="tiw" onclick="document.getElementById('tii').focus()">
+            <div id="tchips"></div>
+            <div class="tip">
+              <input class="tii" id="tii" placeholder="輸入或選擇…" autocomplete="off"
+                oninput="tagIC()" onkeydown="tagIK(event)"
+                onfocus="showTDD()" onblur="setTimeout(hideTDD,150)">
+              <div class="tdd" id="tdd" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+        <div class="fi">
+          <label class="fl">版本號</label>
+          <input type="text" id="f-ver" placeholder="v1.0">
+        </div>
+        <div class="fi">
+          <label class="fl">建議材料</label>
+          <select id="f-recmat"><option value="">不指定</option></select>
+        </div>
+        <div class="fi full">
+          <label class="fl">這次改了什麼</label>
+          <input type="text" id="f-change" placeholder="例如：加厚底部 0.5mm">
+        </div>
+        <div class="fi full">
+          <label class="fl">狀態</label>
+          <select id="f-status">
+            <option value="done">✅ 已完成</option>
+            <option value="fix">🔧 待修改</option>
+          </select>
+        </div>
+        <div class="fi full">
+          <label class="fl">上傳 STL / OBJ / 3MF</label>
+          <div class="upz" id="upz"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="handleDrop(event)">
+            <input type="file" accept=".stl,.obj,.3mf" onchange="handlePick(event)">
+            <div class="upi">📁</div>
+            <div id="uplbl">拖曳或點擊上傳</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn bg" onclick="closeM('modal-form')">取消</button>
+      <button class="btn bp" onclick="saveProduct()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FIX MODAL ═══ -->
+<div class="mo" id="modal-fix">
+  <div class="modal" style="max-width:440px">
+    <div class="mhdr">
+      <div style="font-size:16px;font-weight:700">🔧 請求修改</div>
+      <button class="mclose" onclick="closeM('modal-fix')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fi" style="margin-bottom:12px">
+        <label class="fl">留言者</label>
+        <input type="text" id="fix-author" placeholder="例如：豪哥">
+      </div>
+      <div class="fi">
+        <label class="fl">需要修改的地方 *</label>
+        <textarea id="fix-text" placeholder="描述問題或修改內容…" style="min-height:100px"></textarea>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn bg" onclick="closeM('modal-fix')">取消</button>
+      <button class="btn bo" onclick="submitFix()">送出</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════
+let products  = JSON.parse(localStorage.getItem('3dp3-products')  || 'null');
+let orders    = JSON.parse(localStorage.getItem('3dp3-orders')    || 'null');
+let colors    = JSON.parse(localStorage.getItem('3dp3-colors')    || 'null');
+let materials = JSON.parse(localStorage.getItem('3dp3-materials') || 'null');
+let allTags   = JSON.parse(localStorage.getItem('3dp3-tags')      || 'null');
+let matColors = JSON.parse(localStorage.getItem('3dp3-mc')        || 'null'); // {matName: [colorName,...]}
+
+if (!colors)    colors    = [{name:'黑色',hex:'#333'},{name:'白色',hex:'#eee'},{name:'灰色',hex:'#888'},{name:'紅色',hex:'#c33'},{name:'藍色',hex:'#36c'},{name:'橘色',hex:'#f84'}];
+if (!materials) materials = ['PLA','PETG','ABS','TPU'];
+if (!allTags)   allTags   = ['控制盒','計時器','電池架','按鈕盒','側板','其他'];
+if (!matColors) matColors = { PLA:['黑色','白色','灰色'], PETG:['黑色','藍色','橘色'], ABS:['黑色','白色'], TPU:['黑色','白色','紅色'] };
+
+if (!products) {
+  products = [
+    { id:'p1', name:'控制盒左側板',  desc:'主控制盒的左側面板。對應 A 客戶機台。', tags:['控制盒','側板'], curVer:'v1.2', recMat:'PLA', status:'done', updatedAt:'2025-03-20', fixRequests:[],
+      versions:[{ver:'v1.2',note:'加厚底部固定孔',date:'2025-03-20',stl:null},{ver:'v1.1',note:'調整螺孔位置',date:'2025-02-10',stl:null},{ver:'v1.0',note:'初版',date:'2025-01-05',stl:null}] },
+    { id:'p2', name:'控制盒右側板',  desc:'搭配左側板使用的右側面板。', tags:['控制盒','側板'], curVer:'v1.1', recMat:'PLA', status:'done', updatedAt:'2025-02-10', fixRequests:[],
+      versions:[{ver:'v1.1',note:'螺孔加大 0.2mm',date:'2025-02-10',stl:null},{ver:'v1.0',note:'初版',date:'2025-01-05',stl:null}] },
+    { id:'p3', name:'計時器側板 A',  desc:'計時器機殼側板，待確認尺寸。', tags:['計時器','側板'], curVer:'v0.3', recMat:'PETG', status:'fix', updatedAt:'2025-03-28',
+      fixRequests:[{author:'豪哥',text:'左側孔位好像偏了一點',date:'2025-03-30',resolved:false}],
+      versions:[{ver:'v0.3',note:'縮小整體尺寸 3%',date:'2025-03-28',stl:null},{ver:'v0.2',note:'新增散熱孔',date:'2025-03-10',stl:null},{ver:'v0.1',note:'初版草稿',date:'2025-02-20',stl:null}] },
+    { id:'p4', name:'電池架 18650',  desc:'18650 電池固定架，2顆橫排。', tags:['電池架'], curVer:'v2.0', recMat:'PETG', status:'done', updatedAt:'2025-01-30', fixRequests:[],
+      versions:[{ver:'v2.0',note:'重新設計卡扣',date:'2025-01-30',stl:null},{ver:'v1.0',note:'初版',date:'2024-12-01',stl:null}] },
+    { id:'p5', name:'按鈕盒蓋板',    desc:'4按鈕操作面板蓋，標準間距 25mm。', tags:['按鈕盒'], curVer:'v1.0', recMat:'PLA', status:'done', updatedAt:'2025-02-05', fixRequests:[],
+      versions:[{ver:'v1.0',note:'初版',date:'2025-02-05',stl:null}] },
+    { id:'p6', name:'不明零件 #1',   desc:'放在桌上的零件，不確定是哪台機器的。', tags:['其他'], curVer:'v1.0', recMat:'', status:'done', updatedAt:'2025-03-01', fixRequests:[],
+      versions:[{ver:'v1.0',note:'先存個檔',date:'2025-03-01',stl:null}] },
+  ];
+}
+if (!orders) {
+  orders = [
+    { id:'o1', productId:'p1', productName:'控制盒左側板', productVer:'v1.2', color:'黑色', material:'PLA', qty:3, note:'', status:'done', date:'2025-03-22' },
+    { id:'o2', productId:'p4', productName:'電池架 18650',  productVer:'v2.0', color:'黑色', material:'PETG',qty:5, note:'給B客戶', status:'printing', date:'2025-04-05' },
+    { id:'o3', productId:'p5', productName:'按鈕盒蓋板',   productVer:'v1.0', color:'灰色', material:'PLA', qty:2, note:'', status:'unread', date:'2025-04-03' },
+  ];
+}
+
+function save() {
+  localStorage.setItem('3dp3-products',  JSON.stringify(products));
+  localStorage.setItem('3dp3-orders',    JSON.stringify(orders));
+  localStorage.setItem('3dp3-colors',    JSON.stringify(colors));
+  localStorage.setItem('3dp3-materials', JSON.stringify(materials));
+  localStorage.setItem('3dp3-tags',      JSON.stringify(allTags));
+  localStorage.setItem('3dp3-mc',        JSON.stringify(matColors));
+}
+
+// ════════════════════════════════════════
+//  NAV
+// ════════════════════════════════════════
+function go(page, opts) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const nb = document.getElementById('nav-'+page);
+  if (nb) nb.classList.add('active');
+  if (page==='products') render();
+  if (page==='orders')   renderOrders();
+  if (page==='neworder') renderOrderForm();
+  if (page==='settings') renderSettings();
+  if (page==='todo')     renderTodo(opts?.tab);
+}
+
+// ════════════════════════════════════════
+//  PRODUCTS
+// ════════════════════════════════════════
+let activeTag = 'all';
+let activeDetailId = null;
+let viewingVer = null;
+
+function tagEmoji(t) {
+  return {'控制盒':'🎛️','計時器':'⏱️','電池架':'🔋','按鈕盒':'🔲','側板':'📐','其他':'📦'}[t]||'📦';
+}
+
+function renderTagFilter() {
+  document.getElementById('tag-filter').innerHTML =
+    `<span class="tp ${activeTag==='all'?'active':''}" onclick="setTag('all')">全部</span>` +
+    allTags.map(t=>`<span class="tp ${activeTag===t?'active':''}" onclick="setTag('${t}')">${t}</span>`).join('');
+}
+function setTag(t) { activeTag=t; renderTagFilter(); renderProducts(); }
+
+function renderProducts() {
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  const list=products.filter(p=>(activeTag==='all'||p.tags.includes(activeTag))&&(!q||p.name.toLowerCase().includes(q)));
+  document.getElementById('pcnt').textContent=`（${list.length} 項）`;
+  const grid=document.getElementById('pgrid');
+  if (!list.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="icon">🔍</div><div class="ttl">沒有符合的產品</div></div>`;return;}
+  grid.innerHTML=list.map(p=>{
+    const openFix=(p.fixRequests||[]).filter(f=>!f.resolved).length;
+    const sdone=p.status==='done';
+    return `<div class="pcard">
+      ${openFix?`<div class="fix-badge">🔧 ${openFix}</div>`:''}
+      <div class="cstatus ${sdone?'cs-done':'cs-fix'}">${sdone?'✅ 完成':'🔧 待修改'}</div>
+      <div class="cprev" onclick="openDetail('${p.id}')">
+        ${p.versions.find(v=>v.ver===p.curVer)?.stl
+          ?`<div id="mini-${p.id}" style="width:100%;height:100%"></div>`
+          :`<div class="pholder"><div class="icon">${tagEmoji(p.tags[0])}</div><div style="font-size:11px;color:var(--dimmer)">點擊查看</div></div>`}
+      </div>
+      <div class="cbody">
+        <div class="cname" onclick="openDetail('${p.id}')">${p.name}</div>
+        <div class="cdesc">${p.desc||'—'}</div>
+        <div class="cfooter">
+          <div class="ctags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          <span class="cvbadge">${p.curVer}</span>
+        </div>
+      </div>
+      <div class="cacts">
+        <button class="btn bg bsm" style="flex:1" onclick="openDetail('${p.id}')">詳情</button>
+        <button class="btn bs bsm" style="flex:1" onclick="openVerUpdate('${p.id}')">↑ 更新版本</button>
+        <button class="btn bp bsm" onclick="quickOrder('${p.id}')" title="要列印">🖨️</button>
+      </div>
+    </div>`;
+  }).join('');
+  list.filter(p=>p.versions.find(v=>v.ver===p.curVer)?.stl).forEach(p=>{
+    const el=document.getElementById('mini-'+p.id);
+    if(el) initMini(el,p.versions.find(v=>v.ver===p.curVer).stl);
+  });
+}
+
+function updateStats() {
+  document.getElementById('st-total').textContent=products.length;
+  const openFix=products.reduce((a,p)=>a+(p.fixRequests||[]).filter(f=>!f.resolved).length,0);
+  document.getElementById('st-fix').textContent=openFix;
+  const pendingFix=products.filter(p=>p.status==='fix').length;
+  document.getElementById('st-pending').textContent=pendingFix;
+  const pending=orders.filter(o=>['unread','received','printing'].includes(o.status)).length;
+  document.getElementById('st-print').textContent=pending;
+  const unread=orders.filter(o=>o.status==='unread').length;
+  document.getElementById('badge-unread').textContent=unread;
+  document.getElementById('badge-unread').style.display=unread?'':'none';
+  const todoTotal=openFix+pendingFix+pending;
+  document.getElementById('badge-todo').textContent=todoTotal;
+  document.getElementById('badge-todo').style.display=todoTotal?'':'none';
+}
+
+function render() { updateStats(); renderTagFilter(); renderProducts(); }
+
+// ════════════════════════════════════════
+//  TODO PAGE
+// ════════════════════════════════════════
+let todoTab='print';
+function switchTodoTab(tab) {
+  todoTab=tab;
+  document.getElementById('todo-tab-print').classList.toggle('active',tab==='print');
+  document.getElementById('todo-tab-fix').classList.toggle('active',tab==='fix');
+  document.getElementById('todo-print-panel').style.display=tab==='print'?'':'none';
+  document.getElementById('todo-fix-panel').style.display=tab==='fix'?'':'none';
+}
+function renderTodo(tab) {
+  if(tab) switchTodoTab(tab); else switchTodoTab(todoTab);
+  renderTodoPrint();
+  renderTodoFix();
+}
+
+function renderTodoPrint() {
+  const today=new Date().toISOString().split('T')[0];
+  const pending=orders.filter(o=>['unread','received','printing'].includes(o.status))
+    .sort((a,b)=>{ if(!a.date)return 1; if(!b.date)return -1; return new Date(a.date)-new Date(b.date); });
+  const el=document.getElementById('todo-print-panel');
+  if(!pending.length){el.innerHTML=`<div class="empty"><div class="icon">🎉</div><div class="ttl">沒有待列印的訂單</div></div>`;return;}
+  const OS_MAP={unread:'未讀',received:'收到',printing:'列印中'};
+  el.innerHTML=`<div class="todo-list">`+pending.map(o=>{
+    const overdue=o.date&&o.date<today;
+    const p=products.find(x=>x.id===o.productId);
+    return `<div class="todo-item ${overdue?'urgent':''}" onclick="go('orders')">
+      <div class="todo-icon">🖨️</div>
+      <div class="todo-body">
+        <div class="todo-name">${o.productName} <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--dimmer)">${o.productVer}</span></div>
+        <div class="todo-sub">${o.material} · ${o.color} · ${o.qty}組 ${o.note?'· '+o.note:''}</div>
+      </div>
+      <div class="todo-meta">
+        <div><span class="os os-${o.status}">${OS_MAP[o.status]}</span></div>
+        <div style="margin-top:4px">${o.date||'無期限'}${overdue?' ⚠':''}</div>
+      </div>
+    </div>`;
+  }).join('')+`</div>`;
+}
+
+function renderTodoFix() {
+  const el=document.getElementById('todo-fix-panel');
+  const fixList=[];
+  products.forEach(p=>{
+    if(p.status==='fix') fixList.push({type:'status',p});
+    (p.fixRequests||[]).filter(f=>!f.resolved).forEach(f=>fixList.push({type:'req',p,f}));
+  });
+  if(!fixList.length){el.innerHTML=`<div class="empty"><div class="icon">🎉</div><div class="ttl">沒有待修改的項目</div></div>`;return;}
+  el.innerHTML=`<div class="todo-list">`+fixList.map(item=>{
+    if(item.type==='status') return `<div class="todo-item" onclick="openDetail('${item.p.id}')">
+      <div class="todo-icon">🔧</div>
+      <div class="todo-body">
+        <div class="todo-name">${item.p.name}</div>
+        <div class="todo-sub">標記為待修改</div>
+      </div>
+      <div class="todo-meta">${item.p.updatedAt}</div>
+    </div>`;
+    return `<div class="todo-item" onclick="openDetail('${item.p.id}')">
+      <div class="todo-icon">💬</div>
+      <div class="todo-body">
+        <div class="todo-name">${item.p.name}</div>
+        <div class="todo-sub">${item.f.author}：${item.f.text}</div>
+      </div>
+      <div class="todo-meta">${item.f.date}</div>
+    </div>`;
+  }).join('')+`</div>`;
+}
+
+// ════════════════════════════════════════
+//  DETAIL MODAL
+// ════════════════════════════════════════
+function openDetail(id) {
+  activeDetailId=id;
+  const p=products.find(x=>x.id===id);
+  viewingVer=p.curVer;
+  fillDetail(p,p.curVer);
+  openM('modal-detail');
+}
+
+function fillDetail(p,ver) {
+  document.getElementById('d-name').textContent=p.name;
+  document.getElementById('d-updated').textContent=`最後更新：${p.updatedAt}`;
+  document.getElementById('d-desc').textContent=p.desc||'（尚未填寫說明）';
+  const sel=document.getElementById('d-vsel');
+  sel.innerHTML=p.versions.map(v=>`<option value="${v.ver}" ${v.ver===ver?'selected':''}>${v.ver}${v.ver===p.curVer?' ★':''}</option>`).join('');
+  const vd=p.versions.find(v=>v.ver===ver);
+  const wrap=document.getElementById('d-3d');
+  if(vd?.stl){wrap.innerHTML='';initDetail(wrap,vd.stl);document.getElementById('d-dl').style.display='';}
+  else{wrap.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${ver} 尚未上傳 STL</div></div>`;document.getElementById('d-dl').style.display='none';}
+  document.getElementById('d-meta').innerHTML=[
+    ['目前最新版本',p.curVer],['建議材料',p.recMat||'—'],['狀態',p.status==='done'?'✅ 已完成':'🔧 待修改'],['標籤',p.tags.join(', ')||'—'],
+  ].map(([k,v])=>`<div class="mr"><span class="mk">${k}</span><span class="mv">${v}</span></div>`).join('');
+  document.getElementById('d-log').innerHTML=`<div class="clt">版本紀錄</div>`+
+    p.versions.map(v=>`<div class="cli"><span class="clv">${v.ver}</span><span class="cln">${v.note}</span><span class="cld">${v.date}</span></div>`).join('');
+  renderFixPanel(p);
+  document.getElementById('d-edit').onclick=()=>{ closeM('modal-detail'); openEditProduct(activeDetailId); };
+}
+
+function switchDVer(ver) {
+  viewingVer=ver;
+  const p=products.find(x=>x.id===activeDetailId);
+  const vd=p.versions.find(v=>v.ver===ver);
+  const wrap=document.getElementById('d-3d');
+  if(vd?.stl){wrap.innerHTML='';initDetail(wrap,vd.stl);document.getElementById('d-dl').style.display='';}
+  else{wrap.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${ver} 尚未上傳 STL</div></div>`;document.getElementById('d-dl').style.display='none';}
+}
+
+function dlFromDetail() {
+  const p=products.find(x=>x.id===activeDetailId);
+  const vd=p?.versions.find(v=>v.ver===viewingVer);
+  if(!vd?.stl)return;
+  const a=document.createElement('a');a.href=vd.stl.dataURL;a.download=vd.stl.name||`${p.name}_${viewingVer}.stl`;a.click();
+}
+function orderFromDetail() { closeM('modal-detail'); quickOrder(activeDetailId); }
+
+// ════════════════════════════════════════
+//  FIX REQUESTS
+// ════════════════════════════════════════
+function openFixModal() { document.getElementById('fix-text').value=''; openM('modal-fix'); }
+
+function submitFix() {
+  const text=document.getElementById('fix-text').value.trim();
+  if(!text){showToast('❗ 請填寫說明','info');return;}
+  const p=products.find(x=>x.id===activeDetailId);
+  if(!p.fixRequests)p.fixRequests=[];
+  p.fixRequests.push({author:document.getElementById('fix-author').value.trim()||'匿名',text,date:new Date().toISOString().split('T')[0],resolved:false});
+  // auto-set status to fix
+  p.status='fix';
+  save();closeM('modal-fix');renderFixPanel(p);updateStats();renderProducts();
+  document.getElementById('dt-fix-btn').click();
+  showToast('🔧 修改請求已送出','info');
+}
+
+function renderFixPanel(p) {
+  const fixes=p.fixRequests||[];
+  const open=fixes.filter(f=>!f.resolved).length;
+  document.getElementById('dt-fix-btn').textContent=`修改請求${open?` (${open})`:''}`;
+  const panel=document.getElementById('d-fix-panel');
+  if(!fixes.length){panel.innerHTML=`<div style="color:var(--dimmer);font-size:13px;padding:12px 0">目前沒有修改請求</div>`;return;}
+  panel.innerHTML=fixes.map((f,i)=>`
+    <div class="fxi" style="${f.resolved?'opacity:.45':''}">
+      <div class="fxh"><span class="fxa">${f.author}</span><span class="fxd">${f.date}</span></div>
+      <div class="fxt">${f.text}</div>
+      ${!f.resolved?`<button class="fxr" onclick="resolveFix('${p.id}',${i})">✓ 標記已解決</button>`:`<div style="font-size:10px;color:var(--green);margin-top:4px">✓ 已解決</div>`}
+    </div>`).join('');
+}
+
+function resolveFix(pid,idx) {
+  const p=products.find(x=>x.id===pid);
+  p.fixRequests[idx].resolved=true;
+  // if no more open fixes, set status to done
+  if(!(p.fixRequests||[]).some(f=>!f.resolved)) p.status='done';
+  save();renderFixPanel(p);updateStats();renderProducts();
+  showToast('✅ 已標記解決','success');
+}
+
+// ════════════════════════════════════════
+//  PRODUCT FORM — smart merge by name
+// ════════════════════════════════════════
+let editingId=null;
+let selectedTags=[];
+let pendingStl=null;
+
+function openNewProduct() {
+  editingId=null;
+  document.getElementById('form-title').textContent='新增產品';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-ver').value='v1.0';
+  document.getElementById('f-change').value='初版';
+  document.getElementById('f-status').value='done';
+  selectedTags=[];renderTagChips();
+  pendingStl=null;document.getElementById('uplbl').textContent='拖曳或點擊上傳';
+  populateRecMat();
+  openM('modal-form');
+}
+
+function openEditProduct(id) {
+  const p=products.find(x=>x.id===id);
+  if(!p)return;
+  editingId=id;
+  document.getElementById('form-title').textContent='編輯產品';
+  document.getElementById('f-name').value=p.name;
+  document.getElementById('f-desc').value=p.desc||'';
+  document.getElementById('f-ver').value=p.curVer;
+  document.getElementById('f-change').value='';
+  document.getElementById('f-status').value=p.status||'done';
+  selectedTags=[...p.tags];renderTagChips();
+  pendingStl=null;document.getElementById('uplbl').textContent='拖曳或點擊上傳';
+  populateRecMat();document.getElementById('f-recmat').value=p.recMat||'';
+  openM('modal-form');
+}
+
+function openVerUpdate(pid) {
+  const p=products.find(x=>x.id===pid);
+  editingId=pid;
+  document.getElementById('form-title').textContent=`↑ 更新版本：${p.name}`;
+  document.getElementById('f-name').value=p.name;
+  document.getElementById('f-desc').value=p.desc||'';
+  document.getElementById('f-ver').value=bumpVer(p.curVer);
+  document.getElementById('f-change').value='';
+  document.getElementById('f-status').value=p.status||'done';
+  selectedTags=[...p.tags];renderTagChips();
+  pendingStl=null;document.getElementById('uplbl').textContent='上傳新版本 STL（選填）';
+  populateRecMat();document.getElementById('f-recmat').value=p.recMat||'';
+  openM('modal-form');
+}
+
+function bumpVer(v){const m=v.match(/v(\d+)\.(\d+)/);return m?`v${m[1]}.${parseInt(m[2])+1}`:v+'.1';}
+
+function populateRecMat(){
+  document.getElementById('f-recmat').innerHTML='<option value="">不指定</option>'+materials.map(m=>`<option value="${m}">${m}</option>`).join('');
+}
+
+function saveProduct() {
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){showToast('❗ 請填寫產品名稱','info');return;}
+  const now=new Date().toISOString().split('T')[0];
+  const ver=document.getElementById('f-ver').value.trim()||'v1.0';
+  const note=document.getElementById('f-change').value.trim()||'更新';
+  const status=document.getElementById('f-status').value;
+
+  if(editingId) {
+    // EDITING EXISTING
+    const idx=products.findIndex(p=>p.id===editingId);
+    const old=products[idx];
+    const isNewVer=ver!==old.curVer;
+    let vers=[...(old.versions||[])];
+    if(isNewVer) vers=[{ver,note,date:now,stl:pendingStl||null},...vers];
+    else if(pendingStl){const vi=vers.findIndex(v=>v.ver===ver);if(vi>=0)vers[vi]={...vers[vi],stl:pendingStl};else vers.unshift({ver,note,date:now,stl:pendingStl});}
+    products[idx]={...old,name,desc:document.getElementById('f-desc').value.trim(),tags:[...selectedTags],curVer:ver,recMat:document.getElementById('f-recmat').value,status,updatedAt:now,versions:vers};
+    orders.forEach(o=>{if(o.productId===editingId&&!['done','delivered'].includes(o.status))o.productUpdated=true;});
+    showToast('✅ 產品已更新','success');
+  } else {
+    // NEW — check for name collision (smart merge)
+    const existing=products.find(p=>p.name.trim()===name);
+    if(existing) {
+      // MERGE: add new version to existing product
+      const isNewVer=ver!==existing.curVer;
+      if(!isNewVer&&!pendingStl){
+        showToast(`⚠ 「${name}」已存在（${existing.curVer}），版本號相同，請填寫新版本號`,'info');return;
+      }
+      const idx=products.findIndex(p=>p.id===existing.id);
+      let vers=[...(existing.versions||[])];
+      if(isNewVer) vers=[{ver,note,date:now,stl:pendingStl||null},...vers];
+      else if(pendingStl){const vi=vers.findIndex(v=>v.ver===ver);if(vi>=0)vers[vi]={...vers[vi],stl:pendingStl};}
+      products[idx]={...existing,curVer:ver,recMat:document.getElementById('f-recmat').value||existing.recMat,status,updatedAt:now,versions:vers,tags:[...selectedTags].length?[...selectedTags]:existing.tags,desc:document.getElementById('f-desc').value.trim()||existing.desc};
+      showToast(`🔀 已自動合併到「${name}」，新增版本 ${ver}`,'success');
+    } else {
+      products.unshift({id:'p'+Date.now(),name,desc:document.getElementById('f-desc').value.trim(),tags:[...selectedTags],curVer:ver,recMat:document.getElementById('f-recmat').value,status,updatedAt:now,fixRequests:[],versions:[{ver,note,date:now,stl:pendingStl||null}]});
+      showToast('✅ 產品已新增','success');
+    }
+  }
+  save();closeM('modal-form');render();
+}
+
+// ════════════════════════════════════════
+//  TAG INPUT
+// ════════════════════════════════════════
+function renderTagChips(){
+  document.getElementById('tchips').innerHTML=selectedTags.map((t,i)=>
+    `<span class="tchip">${t}<button class="tcr" onclick="removeChip(${i})">×</button></span>`).join('');
+}
+function removeChip(i){selectedTags.splice(i,1);renderTagChips();}
+function tagIC(){showTDD();}
+function showTDD(){
+  const v=document.getElementById('tii').value.toLowerCase();
+  const dd=document.getElementById('tdd');
+  const opts=allTags.filter(t=>!selectedTags.includes(t)&&t.toLowerCase().includes(v));
+  let html=opts.map(t=>`<div class="tdi" onmousedown="pickTag('${t}')">${t}</div>`).join('');
+  if(v&&!allTags.find(t=>t.toLowerCase()===v))html+=`<div class="tdi tdn" onmousedown="pickTag('${v}',true)">＋ 新增「${v}」</div>`;
+  dd.innerHTML=html||`<div class="tdi" style="color:var(--dimmer)">沒有符合的標籤</div>`;
+  dd.style.display='';
+}
+function hideTDD(){document.getElementById('tdd').style.display='none';}
+function pickTag(t,isNew){
+  if(isNew&&!allTags.includes(t)){allTags.push(t);save();renderTagFilter();renderSettings();}
+  if(!selectedTags.includes(t))selectedTags.push(t);
+  renderTagChips();document.getElementById('tii').value='';hideTDD();
+}
+function tagIK(e){
+  const v=document.getElementById('tii').value.trim();
+  if((e.key==='Enter'||e.key===',')&&v){e.preventDefault();pickTag(v,!allTags.includes(v));}
+  if(e.key==='Backspace'&&!v&&selectedTags.length){selectedTags.pop();renderTagChips();}
+}
+
+// ════════════════════════════════════════
+//  FILE UPLOAD
+// ════════════════════════════════════════
+function handlePick(e){const f=e.target.files[0];if(f)readF(f);}
+function handleDrop(e){e.preventDefault();document.getElementById('upz').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)readF(f);}
+function readF(file){
+  const r=new FileReader();
+  r.onload=e=>{pendingStl={name:file.name,dataURL:e.target.result};document.getElementById('uplbl').textContent=`✅ ${file.name}`;showToast('📁 檔案已載入','success');};
+  r.readAsDataURL(file);
+}
+
+// ════════════════════════════════════════
+//  THREE.JS
+// ════════════════════════════════════════
+function parseSTL(buf){
+  const geom=new THREE.BufferGeometry(),dv=new DataView(buf);
+  const txt=new TextDecoder().decode(buf.slice(0,256));
+  if(txt.includes('facet')){
+    const lines=new TextDecoder().decode(buf).split('\n'),v=[],n=[];let ni=[0,0,0];
+    for(const l of lines){const t=l.trim();if(t.startsWith('facet normal')){const p=t.split(/\s+/);ni=[+p[2],+p[3],+p[4]];}else if(t.startsWith('vertex')){const p=t.split(/\s+/);v.push(+p[1],+p[2],+p[3]);n.push(...ni);}}
+    geom.setAttribute('position',new THREE.BufferAttribute(new Float32Array(v),3));
+    geom.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(n),3));
+  }else{
+    const num=dv.getUint32(80,true),v=new Float32Array(num*9),n=new Float32Array(num*9);let off=84;
+    for(let i=0;i<num;i++){const nx=dv.getFloat32(off,true),ny=dv.getFloat32(off+4,true),nz=dv.getFloat32(off+8,true);off+=12;for(let j=0;j<3;j++){const b=i*9+j*3;v[b]=dv.getFloat32(off,true);v[b+1]=dv.getFloat32(off+4,true);v[b+2]=dv.getFloat32(off+8,true);n[b]=nx;n[b+1]=ny;n[b+2]=nz;off+=12;}off+=2;}
+    geom.setAttribute('position',new THREE.BufferAttribute(v,3));
+    geom.setAttribute('normal',new THREE.BufferAttribute(n,3));
+  }
+  return geom;
+}
+
+function viewer(el,stlData,interactive){
+  const w=el.clientWidth||260,h=el.clientHeight||160;
+  const r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setSize(w,h);r.setPixelRatio(Math.min(devicePixelRatio,2));
+  const s=new THREE.Scene(),c=new THREE.PerspectiveCamera(45,w/h,.01,100000);
+  s.add(new THREE.AmbientLight(0xffffff,.5));const d=new THREE.DirectionalLight(0xffffff,1);d.position.set(1,2,3);s.add(d);
+  const d2=new THREE.DirectionalLight(0x47b8ff,.25);d2.position.set(-2,-1,1);s.add(d2);
+  el.innerHTML='';el.appendChild(r.domElement);
+  fetch(stlData.dataURL).then(x=>x.arrayBuffer()).then(buf=>{
+    const geom=parseSTL(buf);geom.computeBoundingBox();
+    const box=geom.boundingBox,cx=(box.max.x+box.min.x)/2,cy=(box.max.y+box.min.y)/2,cz=(box.max.z+box.min.z)/2;
+    const sz=Math.max(box.max.x-box.min.x,box.max.y-box.min.y,box.max.z-box.min.z);
+    geom.translate(-cx,-cy,-cz);
+    const mat=new THREE.MeshPhongMaterial({color:0xe8ff47,specular:0x222222,shininess:35,side:THREE.DoubleSide});
+    const mesh=new THREE.Mesh(geom,mat);s.add(mesh);c.position.z=sz*1.6;
+    let rx=0,ry=0,drag=false,last={x:0,y:0};
+    if(interactive){
+      const hint=document.createElement('div');hint.className='stl-hint';hint.textContent='拖曳旋轉';el.appendChild(hint);
+      r.domElement.addEventListener('mousedown',e=>{drag=true;last={x:e.clientX,y:e.clientY};hint.remove();});
+      window.addEventListener('mouseup',()=>drag=false);
+      window.addEventListener('mousemove',e=>{if(!drag)return;ry+=(e.clientX-last.x)*.005;rx+=(e.clientY-last.y)*.005;last={x:e.clientX,y:e.clientY};});
+      r.domElement.addEventListener('touchstart',e=>{drag=true;last={x:e.touches[0].clientX,y:e.touches[0].clientY};hint.remove();},{passive:true});
+      window.addEventListener('touchend',()=>drag=false);
+      window.addEventListener('touchmove',e=>{if(!drag)return;ry+=(e.touches[0].clientX-last.x)*.005;rx+=(e.touches[0].clientY-last.y)*.005;last={x:e.touches[0].clientX,y:e.touches[0].clientY};});
+    }
+    (function frame(){requestAnimationFrame(frame);if(!drag)ry+=.005;mesh.rotation.x=rx;mesh.rotation.y=ry;r.render(s,c);})();
+  });
+}
+function initMini(el,stl){viewer(el,stl,false);}
+function initDetail(el,stl){viewer(el,stl,true);}
+
+// ════════════════════════════════════════
+//  ORDERS
+// ════════════════════════════════════════
+const OS_LIST=[
+  {key:'unread',   label:'未讀'},
+  {key:'received', label:'收到'},
+  {key:'printing', label:'列印中'},
+  {key:'done',     label:'已完成'},
+  {key:'delivered',label:'收到成品'},
+];
+
+function renderOrderForm() {
+  // Products
+  const psel=document.getElementById('op-product');
+  psel.innerHTML='<option value="">— 請選擇 —</option>'+products.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  // Materials
+  const msel=document.getElementById('op-mat');
+  msel.innerHTML=materials.map(m=>`<option value="${m}">${m}</option>`).join('');
+  onMatChange();
+  document.getElementById('op-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('op-note').value='';
+  document.getElementById('op-verhint').textContent='';
+  document.getElementById('op-ver').innerHTML='';
+}
+
+function onProductChange() {
+  const pid=document.getElementById('op-product').value;
+  const p=products.find(x=>x.id===pid);
+  const vsel=document.getElementById('op-ver');
+  const hint=document.getElementById('op-verhint');
+  if(p){
+    vsel.innerHTML=p.versions.map(v=>`<option value="${v.ver}" ${v.ver===p.curVer?'selected':''}>${v.ver}${v.ver===p.curVer?' (最新)':''}</option>`).join('');
+    hint.textContent=`建議材料：${p.recMat||'未指定'}`;
+    if(p.recMat&&materials.includes(p.recMat)){document.getElementById('op-mat').value=p.recMat;onMatChange();}
+  }else{vsel.innerHTML='';hint.textContent='';}
+}
+
+function onMatChange() {
+  const mat=document.getElementById('op-mat').value;
+  const csel=document.getElementById('op-color');
+  // filter colors by binding
+  const bound=matColors[mat];
+  const available=bound&&bound.length>0 ? colors.filter(c=>bound.includes(c.name)) : colors;
+  csel.innerHTML=available.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+}
+
+function submitOrder() {
+  const pid=document.getElementById('op-product').value;
+  if(!pid){showToast('❗ 請選擇產品','info');return;}
+  const p=products.find(x=>x.id===pid);
+  const ver=document.getElementById('op-ver').value;
+  orders.push({id:'o'+Date.now(),productId:pid,productName:p.name,productVer:ver,color:document.getElementById('op-color').value,material:document.getElementById('op-mat').value,qty:parseInt(document.getElementById('op-qty').value)||1,note:document.getElementById('op-note').value.trim(),status:'unread',date:document.getElementById('op-date').value});
+  save();updateStats();showToast('🖨️ 下單成功！','success');go('orders');
+}
+
+function quickOrder(pid) {
+  go('neworder');
+  setTimeout(()=>{
+    document.getElementById('op-product').value=pid;
+    onProductChange();
+  },60);
+}
+
+function renderOrders() {
+  const today=new Date().toISOString().split('T')[0];
+  const sorted=[...orders].sort((a,b)=>{
+    // active first, then by date
+    const aActive=['unread','received','printing'].includes(a.status);
+    const bActive=['unread','received','printing'].includes(b.status);
+    if(aActive&&!bActive)return -1;if(!aActive&&bActive)return 1;
+    if(!a.date)return 1;if(!b.date)return -1;
+    return new Date(a.date)-new Date(b.date);
+  });
+  const tbody=document.getElementById('orders-tbody'),empty=document.getElementById('orders-empty');
+  if(!sorted.length){tbody.innerHTML='';empty.style.display='flex';return;}
+  empty.style.display='none';
+  tbody.innerHTML=sorted.map(o=>{
+    const overdue=o.date&&o.date<today&&!['done','delivered'].includes(o.status);
+    const cc=colors.find(c=>c.name===o.color);
+    return `<tr>
+      <td><div style="font-weight:600">${o.productName}</div>${o.productUpdated?'<div style="font-size:10px;color:var(--orange)">⚠ 產品已更新</div>':''}</td>
+      <td><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--dimmer)">${o.productVer||''}</span></td>
+      <td><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:${cc?cc.hex:'#888'};border:1px solid rgba(255,255,255,.2)"></span>${o.color}</span></td>
+      <td><span class="tag">${o.material}</span></td>
+      <td>${o.qty} 組</td>
+      <td style="color:var(--dim);font-size:12px;max-width:90px">${o.note||'—'}</td>
+      <td><select style="padding:4px 8px;font-size:11px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;cursor:pointer" onchange="updateOS('${o.id}',this.value)">${OS_LIST.map(s=>`<option value="${s.key}" ${o.status===s.key?'selected':''}>${s.label}</option>`).join('')}</select></td>
+      <td style="font-size:12px;${overdue?'color:var(--red);font-weight:600':'color:var(--dimmer)'}">${o.date||'—'}${overdue?' ⚠':''}</td>
+      <td><button class="btn bd bsm" onclick="delOrder('${o.id}')">刪除</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateOS(id,status){
+  const o=orders.find(x=>x.id===id);
+  if(o){o.status=status;if(status==='received')o.productUpdated=false;save();updateStats();}
+}
+function delOrder(id){orders=orders.filter(x=>x.id!==id);save();renderOrders();updateStats();showToast('🗑 已刪除','info');}
+
+// ════════════════════════════════════════
+//  SETTINGS
+// ════════════════════════════════════════
+function renderSettings() {
+  // Colors
+  document.getElementById('color-list').innerHTML=colors.map((c,i)=>
+    `<span class="schip"><span class="sdot" style="background:${c.hex};border:1px solid rgba(255,255,255,.15)"></span>${c.name}<button class="sdel" onclick="delColor(${i})">×</button></span>`).join('');
+  // Materials
+  document.getElementById('mat-list').innerHTML=materials.map((m,i)=>
+    `<span class="schip">${m}<button class="sdel" onclick="delMat(${i})">×</button></span>`).join('');
+  // Tags
+  document.getElementById('tag-manage-list').innerHTML=allTags.map((t,i)=>
+    `<span class="schip">${t}<button class="sdel" onclick="delTagG(${i})">×</button></span>`).join('');
+  // Mat-Color bindings
+  const el=document.getElementById('mcbind-list');
+  el.innerHTML=materials.map(m=>{
+    const bound=matColors[m]||[];
+    return `<div class="mcbind-row">
+      <span class="mcbind-mat">${m}</span>
+      <div class="mcbind-colors">${colors.map(c=>`
+        <span class="mcbind-chip ${bound.includes(c.name)?'selected':''}" onclick="toggleMCBind('${m}','${c.name}')">
+          <span class="ccdot" style="background:${c.hex};border:1px solid rgba(255,255,255,.15)"></span>${c.name}
+        </span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleMCBind(mat,color) {
+  if(!matColors[mat])matColors[mat]=[];
+  const idx=matColors[mat].indexOf(color);
+  if(idx>=0)matColors[mat].splice(idx,1);else matColors[mat].push(color);
+  save();renderSettings();
+}
+
+function addColor(){
+  const name=document.getElementById('nc-name').value.trim();const hex=document.getElementById('nc-hex').value;
+  if(!name){showToast('❗ 請填名稱','info');return;}
+  colors.push({name,hex});save();renderSettings();showToast('✅ 已新增','success');document.getElementById('nc-name').value='';
+}
+function delColor(i){colors.splice(i,1);save();renderSettings();}
+
+function addMat(){
+  const n=document.getElementById('nm-name').value.trim();
+  if(!n||materials.includes(n))return;
+  materials.push(n);save();renderSettings();showToast('✅ 已新增','success');document.getElementById('nm-name').value='';
+}
+function delMat(i){materials.splice(i,1);save();renderSettings();}
+
+function addTag(){
+  const n=document.getElementById('nt-name').value.trim();
+  if(!n||allTags.includes(n))return;
+  allTags.push(n);save();renderSettings();renderTagFilter();showToast('✅ 已新增','success');document.getElementById('nt-name').value='';
+}
+function delTagG(i){allTags.splice(i,1);save();renderSettings();renderTagFilter();renderProducts();}
+
+// ════════════════════════════════════════
+//  MODAL + TAB + TOAST
+// ════════════════════════════════════════
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
+
+function switchMTab(btn,panelId){
+  const modal=btn.closest('.modal');
+  modal.querySelectorAll('.tbb').forEach(b=>b.classList.remove('active'));
+  modal.querySelectorAll('.tbp').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');document.getElementById(panelId).classList.add('active');
+}
+
+let toastT;
+function showToast(msg,type='info'){
+  const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${type} show`;
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// INIT
+render();
+</script>
+</body>
+</html>
