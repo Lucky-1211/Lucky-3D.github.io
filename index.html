@@ -3,21 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D列印產品管理</title>
+<title>Lucky-3D 產品管理</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-/* https://lucky-3d.lucky20071211.workers.dev/ */
-/* 見 CONFIG 區塊 (JS) */
-
 :root{
   --bg:#0e0f11;--surface:#16181c;--s2:#1e2128;--border:#2a2d36;
   --accent:#e8ff47;--a2:#47b8ff;--text:#e8eaf0;--dim:#7a7f8e;--dimmer:#444854;
   --green:#4dff91;--orange:#ff9447;--red:#ff4747;--purple:#b47fff;
   --r:10px;--rs:6px;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .app{display:flex;min-height:100vh}
 
@@ -30,10 +27,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .nav{padding:16px 12px;flex:1}
 .nav-label{font-size:10px;letter-spacing:2px;color:var(--dimmer);text-transform:uppercase;padding:0 8px;margin-bottom:6px;margin-top:16px}
 .nb{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border:none;background:transparent;color:var(--dim);border-radius:var(--rs);cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s;text-align:left}
-.nb:hover{background:var(--s2);color:var(--text)}
-.nb.active{background:rgba(232,255,71,.1);color:var(--accent)}
-.nb.admin-only{display:none}
-.nb.admin-only.visible{display:flex}
+.nb:hover{background:var(--s2);color:var(--text)}.nb.active{background:rgba(232,255,71,.1);color:var(--accent)}
+.nb.ao{display:none}.nb.ao.vis{display:flex}
 .ni{font-size:15px;width:18px;text-align:center}
 .nbadge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-family:'Space Mono',monospace;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
 
@@ -61,11 +56,11 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
-.sc.clickable{cursor:pointer;transition:all .15s}.sc.clickable:hover{border-color:var(--accent)}
+.sc.cl{cursor:pointer;transition:all .15s}.sc.cl:hover{border-color:var(--accent)}
 .sl{font-size:11px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
 .sv{font-family:'Space Mono',monospace;font-size:26px;font-weight:700}
 
-/* FILTERS */
+/* FILTER */
 .filter-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
 .sw{position:relative;flex:1;min-width:200px}
 .sw input{width:100%;padding:9px 14px 9px 36px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
@@ -79,18 +74,15 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .2s;position:relative}
 .pcard:hover{border-color:rgba(232,255,71,.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
-
-/* CARD PREVIEW — tabs for image vs 3D */
 .cprev{height:170px;background:var(--s2);position:relative;overflow:hidden}
 .prev-tabs{position:absolute;top:6px;left:6px;z-index:3;display:flex;gap:4px}
-.prev-tab{padding:2px 8px;font-size:10px;border-radius:4px;border:none;cursor:pointer;font-family:inherit;transition:all .15s;background:rgba(14,15,17,.7);color:var(--dim);border:1px solid rgba(255,255,255,.1)}
+.prev-tab{padding:2px 8px;font-size:10px;border-radius:4px;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;background:rgba(14,15,17,.7);color:var(--dim)}
 .prev-tab.active{background:rgba(232,255,71,.2);color:var(--accent);border-color:rgba(232,255,71,.4)}
 .prev-panel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
 .prev-panel.hidden{display:none}
 .prev-img{width:100%;height:100%;object-fit:cover}
 .pholder{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--dimmer);cursor:pointer}
 .pholder .icon{font-size:40px}
-
 .cbody{padding:14px}
 .cname{font-size:14px;font-weight:700;margin-bottom:4px;cursor:pointer}.cname:hover{color:var(--accent)}
 .cdesc{font-size:12px;color:var(--dim);line-height:1.5;margin-bottom:10px;min-height:36px}
@@ -137,10 +129,17 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .tii{background:transparent;border:none;outline:none;color:var(--text);font-size:13px;font-family:inherit;min-width:80px;flex:1}
 .tdd{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);position:absolute;top:calc(100% + 2px);left:0;right:0;z-index:300;max-height:180px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .tdi{padding:8px 12px;font-size:13px;cursor:pointer}.tdi:hover{background:var(--s2)}
-.tdn{color:var(--accent)}
-.tip{position:relative;flex:1;min-width:80px}
+.tdn{color:var(--accent)}.tip{position:relative;flex:1;min-width:80px}
 
-/* STL */
+/* UPLOAD ZONE */
+.upz{border:2px dashed var(--border);border-radius:var(--r);padding:20px;text-align:center;color:var(--dim);font-size:13px;cursor:pointer;transition:all .2s;position:relative}
+.upz:hover,.upz.drag{border-color:var(--accent);color:var(--accent)}
+.upz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upi{font-size:28px;margin-bottom:8px}
+.upload-progress{height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.upload-progress-bar{height:100%;background:var(--accent);width:0;transition:width .3s;border-radius:2px}
+
+/* STL VIEWER */
 .d3w{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:12px}
 .stl-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--dimmer);background:rgba(0,0,0,.6);padding:2px 10px;border-radius:4px;pointer-events:none}
 
@@ -168,8 +167,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 /* FIX REQUESTS */
 .fxi{background:rgba(255,148,71,.05);border:1px solid rgba(255,148,71,.2);border-radius:var(--rs);padding:10px 14px;font-size:12px;margin-bottom:8px}
 .fxh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.fxa{font-weight:700;color:var(--orange)}
-.fxd{color:var(--dimmer);font-size:11px}
+.fxa{font-weight:700;color:var(--orange)}.fxd{color:var(--dimmer);font-size:11px}
 .fxt{color:var(--dim);line-height:1.5}
 .fxr{background:none;border:none;color:var(--dimmer);cursor:pointer;font-size:11px;margin-top:6px;padding:0}.fxr:hover{color:var(--green)}
 
@@ -178,9 +176,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .todo-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s}
 .todo-item:hover{border-color:var(--dim)}
 .todo-icon{font-size:20px;flex-shrink:0}
-.todo-body{flex:1}
-.todo-name{font-size:13px;font-weight:600;margin-bottom:2px}
-.todo-sub{font-size:11px;color:var(--dim)}
+.todo-body{flex:1}.todo-name{font-size:13px;font-weight:600;margin-bottom:2px}.todo-sub{font-size:11px;color:var(--dim)}
 .todo-meta{font-size:11px;color:var(--dimmer);text-align:right;flex-shrink:0}
 .todo-item.urgent{border-color:rgba(255,71,71,.3);background:rgba(255,71,71,.03)}
 .todo-item.urgent .todo-meta{color:var(--red);font-weight:600}
@@ -194,6 +190,12 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .sdel{background:none;border:none;color:var(--dimmer);cursor:pointer;font-size:14px;padding:0;line-height:1}.sdel:hover{color:var(--red)}
 .ail{display:flex;gap:8px;align-items:center}.ail input{flex:1}
 input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-radius:var(--rs);background:none;cursor:pointer;padding:2px}
+.mcbind-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:10px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs)}
+.mcbind-mat{font-weight:600;min-width:60px;font-size:13px}
+.mcbind-colors{display:flex;flex-wrap:wrap;gap:5px;flex:1}
+.mcbind-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.mcbind-chip.selected{border-color:var(--accent);background:rgba(232,255,71,.1);color:var(--accent)}
+.ccdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
 /* DETAIL */
 .mr{display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}
@@ -201,33 +203,8 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
 .clt{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dimmer);margin-bottom:10px}
 .cli{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:flex-start}
 .clv{font-family:'Space Mono',monospace;color:var(--accent);width:40px;flex-shrink:0}
-.cln{color:var(--dim);flex:1}
-.cld{color:var(--dimmer);white-space:nowrap}
-
-/* UPLOAD */
-.upz{border:2px dashed var(--border);border-radius:var(--r);padding:20px;text-align:center;color:var(--dim);font-size:13px;cursor:pointer;transition:all .2s;position:relative}
-.upz:hover,.upz.drag{border-color:var(--accent);color:var(--accent)}
-.upz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upi{font-size:28px;margin-bottom:8px}
-
-/* EMPTY / LOADING */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--dimmer);gap:12px}
-.empty .icon{font-size:48px}.empty .ttl{font-size:16px;color:var(--dim);font-weight:600}.empty .sub{font-size:13px}
-.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--dimmer);gap:10px;font-size:13px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
-
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.stl{font-size:14px;font-weight:700}
-.scnt{font-family:'Space Mono',monospace;font-size:11px;color:var(--dimmer);margin-left:8px}
-
-/* MCBind */
-.mcbind-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:10px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs)}
-.mcbind-mat{font-weight:600;min-width:60px;font-size:13px}
-.mcbind-colors{display:flex;flex-wrap:wrap;gap:5px;flex:1}
-.mcbind-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all .15s}
-.mcbind-chip.selected{border-color:var(--accent);background:rgba(232,255,71,.1);color:var(--accent)}
-.ccdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cln{color:var(--dim);flex:1}.cld{color:var(--dimmer);white-space:nowrap}
+.cli-stl{font-size:10px;color:var(--a2);margin-top:2px}
 
 /* LOGIN */
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
@@ -238,6 +215,16 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
 .pin-input:focus{border-color:var(--accent)}
 .pin-err{color:var(--red);font-size:12px;margin-top:6px}
 
+/* EMPTY / LOADING */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--dimmer);gap:12px}
+.empty .icon{font-size:48px}.empty .ttl{font-size:16px;color:var(--dim);font-weight:600}.empty .sub{font-size:13px}
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--dimmer);gap:10px;font-size:13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.stl-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--a2);background:rgba(71,184,255,.1);border:1px solid rgba(71,184,255,.2);padding:1px 6px;border-radius:4px}
+
 /* TOAST */
 .toast{position:fixed;bottom:28px;right:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 18px;font-size:13px;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s}
 .toast.show{transform:translateY(0);opacity:1}
@@ -245,41 +232,39 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
 .toast.info{border-left:3px solid var(--a2)}
 .toast.error{border-left:3px solid var(--red)}
 
-/* MAT-COLOR BINDING in order form */
-#op-color-hint{font-size:11px;color:var(--dimmer);margin-top:2px}
-
 @media(max-width:700px){
   .sidebar{width:60px}
   .logo-title,.nb span:not(.ni),.nav-label,.admin-chip{display:none}
   .stats-row{grid-template-columns:1fr 1fr}
   .fg{grid-template-columns:1fr}.fi.full{grid-column:1}
-  .pi{padding:16px}
-  .modal-lg{max-width:98vw}
+  .pi{padding:16px}.modal-lg{max-width:98vw}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══════════ LOGIN SCREEN ═══════════ -->
+<!-- LOGIN -->
 <div id="login-screen" class="login-wrap" style="display:none">
   <div class="login-box">
-    <div class="login-logo">Lucky-3D</div>
+    <div class="login-logo">LUCKY-3D</div>
     <div class="login-title">管理員登入</div>
-    <input class="pin-input" type="password" id="pin-input" placeholder="••••" maxlength="20"
+    <input class="pin-input" type="password" id="pin-input" placeholder="••••" maxlength="30"
       onkeydown="if(event.key==='Enter')doLogin()">
     <button class="btn bp" style="width:100%;justify-content:center;margin-top:4px" onclick="doLogin()">登入</button>
     <div class="pin-err" id="pin-err"></div>
-    <button class="bg btn bsm" style="margin-top:16px;width:100%;justify-content:center" onclick="continueAsGuest()">以訪客身份繼續（只能下單 / 提修改請求）</button>
+    <button class="btn bg bsm" style="margin-top:16px;width:100%;justify-content:center" onclick="continueAsGuest()">
+      以訪客身份繼續（下單 / 修改請求）
+    </button>
   </div>
 </div>
 
-<!-- ═══════════ MAIN APP ═══════════ -->
+<!-- MAIN APP -->
 <div id="main-app" class="app" style="display:none">
 
 <aside class="sidebar">
   <div class="logo">
-    <div class="logo-mark">Lucky-3D</div>
-    <div class="logo-title">列印產品管理</div>
+    <div class="logo-mark">LUCKY-3D</div>
+    <div class="logo-title">3D 列印管理</div>
     <div class="admin-chip" id="admin-chip" style="display:none">⚡ 管理員</div>
   </div>
   <nav class="nav">
@@ -289,10 +274,10 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
     <button class="nb" id="nav-orders" onclick="go('orders')"><span class="ni">📋</span><span>列印紀錄</span><span class="nbadge" id="badge-unread" style="display:none"></span></button>
     <div class="nav-label">工具</div>
     <button class="nb" id="nav-neworder" onclick="go('neworder')"><span class="ni">🖨️</span><span>要列印</span></button>
-    <button class="nb admin-only" id="nav-add-product" onclick="openNewProduct()"><span class="ni">➕</span><span>新增產品</span></button>
-    <button class="nb admin-only" id="nav-settings" onclick="go('settings')"><span class="ni">⚙️</span><span>設定</span></button>
+    <button class="nb ao" onclick="openNewProduct()"><span class="ni">➕</span><span>新增產品</span></button>
+    <button class="nb ao" id="nav-settings" onclick="go('settings')"><span class="ni">⚙️</span><span>設定</span></button>
     <div class="nav-label"></div>
-    <button class="nb" onclick="logout()" style="margin-top:auto"><span class="ni">🚪</span><span id="logout-label">切換身份</span></button>
+    <button class="nb" onclick="logout()"><span class="ni">🚪</span><span id="logout-lbl">切換身份</span></button>
   </nav>
 </aside>
 
@@ -303,22 +288,22 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
     <div class="topbar">
       <div class="topbar-title">產品庫</div>
       <div class="topbar-actions">
-        <button class="btn bs bsm" onclick="loadAll()" title="重新整理">↺ 刷新</button>
-        <button class="btn bp admin-only" onclick="openNewProduct()">＋ 新增產品</button>
+        <button class="btn bs bsm" onclick="loadAll()">↺ 刷新</button>
+        <button class="btn bp ao" onclick="openNewProduct()">＋ 新增產品</button>
       </div>
     </div>
     <div class="pi">
       <div class="stats-row">
         <div class="sc"><div class="sl">總數</div><div class="sv" style="color:var(--accent)" id="st-total">—</div></div>
-        <div class="sc clickable" onclick="go('todo',{tab:'fix'})"><div class="sl">未讀需求</div><div class="sv" style="color:var(--red)" id="st-fix">—</div></div>
-        <div class="sc clickable" onclick="go('todo',{tab:'fix'})"><div class="sl">待修改</div><div class="sv" style="color:var(--orange)" id="st-pending">—</div></div>
-        <div class="sc clickable" onclick="go('todo',{tab:'print'})"><div class="sl">待列印</div><div class="sv" style="color:var(--a2)" id="st-print">—</div></div>
+        <div class="sc cl" onclick="go('todo',{tab:'fix'})"><div class="sl">未讀需求</div><div class="sv" style="color:var(--red)" id="st-fix">—</div></div>
+        <div class="sc cl" onclick="go('todo',{tab:'fix'})"><div class="sl">待修改</div><div class="sv" style="color:var(--orange)" id="st-pending">—</div></div>
+        <div class="sc cl" onclick="go('todo',{tab:'print'})"><div class="sl">待列印</div><div class="sv" style="color:var(--a2)" id="st-print">—</div></div>
       </div>
       <div class="filter-bar">
         <div class="sw"><span class="si">🔍</span><input type="text" placeholder="搜尋產品名稱..." id="search-input" oninput="renderProducts()"></div>
         <div class="tf" id="tag-filter"></div>
       </div>
-      <div class="sh"><div><span class="stl">所有產品</span><span class="scnt" id="pcnt"></span></div></div>
+      <div class="sh"><div><span style="font-size:14px;font-weight:700">所有產品</span><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--dimmer);margin-left:8px" id="pcnt"></span></div></div>
       <div id="pgrid"></div>
     </div>
   </div>
@@ -347,9 +332,7 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
         <thead><tr><th>產品</th><th>版本</th><th>顏色</th><th>材料</th><th>數量</th><th>備註</th><th>狀態</th><th>期限</th><th></th></tr></thead>
         <tbody id="orders-tbody"></tbody>
       </table>
-    </div>
-    <div id="orders-empty" class="empty" style="display:none">
-      <div class="icon">📋</div><div class="ttl">還沒有列印紀錄</div>
+      <div id="orders-empty" class="empty" style="display:none"><div class="icon">📋</div><div class="ttl">還沒有列印紀錄</div></div>
     </div></div>
   </div>
 
@@ -361,10 +344,10 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
         <div class="fi full"><label class="fl">選擇產品 *</label><select id="op-product" onchange="onProductChange()"><option value="">— 請選擇 —</option></select></div>
         <div class="fi full"><label class="fl">選擇版本</label><select id="op-ver"></select><div id="op-verhint" style="font-size:11px;color:var(--dimmer);margin-top:2px"></div></div>
         <div class="fi"><label class="fl">材料</label><select id="op-mat" onchange="onMatChange()"></select></div>
-        <div class="fi"><label class="fl">顏色</label><select id="op-color"></select><div id="op-color-hint"></div></div>
+        <div class="fi"><label class="fl">顏色</label><select id="op-color"></select></div>
         <div class="fi"><label class="fl">數量（組）</label><input type="number" id="op-qty" value="1" min="1"></div>
         <div class="fi"><label class="fl">期限</label><input type="date" id="op-date"></div>
-        <div class="fi full"><label class="fl">備註</label><textarea id="op-note" placeholder="例如：縮小5%、給XX客戶..."></textarea></div>
+        <div class="fi full"><label class="fl">備註</label><textarea id="op-note" placeholder="例如：縮小5%…"></textarea></div>
       </div>
       <div style="margin-top:20px;display:flex;gap:10px">
         <button class="btn bp" id="submit-order-btn" onclick="submitOrder()">送出</button>
@@ -373,43 +356,21 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
     </div>
   </div>
 
-  <!-- SETTINGS (admin only) -->
+  <!-- SETTINGS -->
   <div id="page-settings" class="page">
     <div class="topbar"><div class="topbar-title">設定</div></div>
     <div class="pi" style="max-width:600px">
-      <div class="stsec">
-        <div class="stitle">🎨 顏色管理</div>
-        <div class="slist" id="color-list"></div>
-        <div class="ail">
-          <input type="color" id="nc-hex" value="#ffffff">
-          <input type="text" id="nc-name" placeholder="顏色名稱" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none">
-          <button class="btn bs bsm" onclick="addColor()">新增</button>
-        </div>
+      <div class="stsec"><div class="stitle">🎨 顏色管理</div><div class="slist" id="color-list"></div>
+        <div class="ail"><input type="color" id="nc-hex" value="#ffffff"><input type="text" id="nc-name" placeholder="顏色名稱" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none"><button class="btn bs bsm" onclick="addColor()">新增</button></div>
       </div>
-      <div class="stsec">
-        <div class="stitle">🧱 材料管理</div>
-        <div class="slist" id="mat-list"></div>
-        <div class="ail">
-          <input type="text" id="nm-name" placeholder="材料名稱（例如：PETG-CF）" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none">
-          <button class="btn bs bsm" onclick="addMat()">新增</button>
-        </div>
+      <div class="stsec"><div class="stitle">🧱 材料管理</div><div class="slist" id="mat-list"></div>
+        <div class="ail"><input type="text" id="nm-name" placeholder="材料名稱（例如：PETG-CF）" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none"><button class="btn bs bsm" onclick="addMat()">新增</button></div>
       </div>
-      <div class="stsec">
-        <div class="stitle">🔗 材料↔顏色綁定</div>
-        <div style="font-size:12px;color:var(--dim);margin-bottom:12px">選取每種材料可用的顏色</div>
-        <div id="mcbind-list"></div>
+      <div class="stsec"><div class="stitle">🔗 材料↔顏色綁定</div><div style="font-size:12px;color:var(--dim);margin-bottom:12px">選取每種材料可用的顏色</div><div id="mcbind-list"></div></div>
+      <div class="stsec"><div class="stitle">🏷️ 標籤管理</div><div class="slist" id="tag-manage-list"></div>
+        <div class="ail"><input type="text" id="nt-name" placeholder="標籤名稱" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none"><button class="btn bs bsm" onclick="addTagG()">新增</button></div>
       </div>
-      <div class="stsec">
-        <div class="stitle">🏷️ 標籤管理</div>
-        <div class="slist" id="tag-manage-list"></div>
-        <div class="ail">
-          <input type="text" id="nt-name" placeholder="標籤名稱" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none">
-          <button class="btn bs bsm" onclick="addTagG()">新增</button>
-        </div>
-      </div>
-      <div class="stsec">
-        <button class="btn bp" onclick="saveSettings()">💾 儲存設定到 Notion</button>
-      </div>
+      <div class="stsec"><button class="btn bp" onclick="saveSettings()">💾 儲存設定到 Notion</button></div>
     </div>
   </div>
 
@@ -427,10 +388,10 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
       </div>
     </div>
     <div class="mbody">
-      <!-- IMAGE / 3D PREVIEW TABS in detail -->
+      <!-- Preview mode switcher -->
       <div style="display:flex;gap:8px;margin-bottom:8px">
-        <button class="tbb active" id="d-prev-img-btn" onclick="switchDetailPreview('img')">🖼 圖片</button>
-        <button class="tbb" id="d-prev-3d-btn" onclick="switchDetailPreview('3d')">📦 3D</button>
+        <button class="tbb active" id="d-prev-img-btn" onclick="switchDPreview('img')">🖼 圖片</button>
+        <button class="tbb" id="d-prev-3d-btn" onclick="switchDPreview('3d')">📦 3D</button>
       </div>
       <div id="d-img-wrap" style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);height:260px;overflow:hidden;margin-bottom:12px;display:flex;align-items:center;justify-content:center">
         <div class="pholder" id="d-img-ph"><div class="icon">🖼</div><div style="font-size:12px;color:var(--dimmer)">無圖片</div></div>
@@ -444,11 +405,12 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
           <select class="vsel" id="d-vsel" onchange="switchDVer(this.value)"></select>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn bs bsm" id="d-dl" style="display:none" onclick="dlFromDetail()">⬇ 下載 STL</button>
-          <button class="btn bs bsm admin-only" id="d-edit">✏️ 編輯</button>
+          <a id="d-dl" style="display:none" class="btn bs bsm" target="_blank">⬇ 下載 STL</a>
+          <button class="btn bs bsm ao" id="d-edit">✏️ 編輯</button>
           <button class="btn bg bsm" onclick="orderFromDetail()">🖨️ 要列印</button>
         </div>
       </div>
+
       <div class="tabs">
         <button class="tbb active" onclick="switchMTab(this,'dt-info')">資訊</button>
         <button class="tbb" onclick="switchMTab(this,'dt-log')">版本紀錄</button>
@@ -464,7 +426,7 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
   </div>
 </div>
 
-<!-- PRODUCT FORM MODAL (admin) -->
+<!-- PRODUCT FORM MODAL -->
 <div class="mo" id="modal-form">
   <div class="modal">
     <div class="mhdr">
@@ -486,17 +448,36 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
         <div class="fi"><label class="fl">建議材料</label><select id="f-recmat"><option value="">不指定</option></select></div>
         <div class="fi full"><label class="fl">這次改了什麼</label><input type="text" id="f-change" placeholder="例如：加厚底部 0.5mm"></div>
         <div class="fi full"><label class="fl">狀態</label><select id="f-status"><option value="done">✅ 已完成</option><option value="fix">🔧 待修改</option></select></div>
+
+        <!-- IMAGE UPLOAD -->
         <div class="fi full">
-          <label class="fl">產品圖片 URL（可貼 Imgur / Google Drive 圖片連結）</label>
-          <input type="url" id="f-imgurl" placeholder="https://i.imgur.com/xxx.jpg">
-          <img id="f-imgpreview" style="display:none;margin-top:8px;max-height:120px;border-radius:6px;border:1px solid var(--border)" alt="">
-        </div>
-        <div class="fi full">
-          <label class="fl">上傳 STL / OBJ / 3MF（存在瀏覽器，下載後分享）</label>
-          <div class="upz" id="upz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
-            <input type="file" accept=".stl,.obj,.3mf" onchange="handlePick(event)">
-            <div class="upi">📁</div><div id="uplbl">拖曳或點擊上傳</div>
+          <label class="fl">產品圖片（上傳到 GitHub）</label>
+          <div class="upz" id="img-upz"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="handleImgDrop(event)">
+            <input type="file" accept="image/*" onchange="handleImgPick(event)">
+            <div class="upi">🖼</div>
+            <div id="img-uplbl">拖曳或點擊上傳圖片（JPG / PNG / WebP）</div>
+            <div class="upload-progress" id="img-progress" style="display:none"><div class="upload-progress-bar" id="img-bar"></div></div>
           </div>
+          <img id="f-imgpreview" style="display:none;margin-top:8px;max-height:120px;border-radius:6px;border:1px solid var(--border)" alt="">
+          <input type="hidden" id="f-imgurl">
+        </div>
+
+        <!-- STL UPLOAD -->
+        <div class="fi full">
+          <label class="fl">3D 檔案（STL / OBJ / 3MF → 上傳到 GitHub）</label>
+          <div class="upz" id="stl-upz"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="handleStlDrop(event)">
+            <input type="file" accept=".stl,.obj,.3mf" onchange="handleStlPick(event)">
+            <div class="upi">📁</div>
+            <div id="stl-uplbl">拖曳或點擊上傳 STL / OBJ / 3MF</div>
+            <div class="upload-progress" id="stl-progress" style="display:none"><div class="upload-progress-bar" id="stl-bar"></div></div>
+          </div>
+          <div id="stl-current" style="font-size:11px;color:var(--a2);margin-top:4px;display:none"></div>
         </div>
       </div>
     </div>
@@ -522,169 +503,188 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════════════════════
-//  ★ CONFIG — 填入你的 Worker 網址 ★
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
+//  ★ CONFIG — 部署後填入你的 Worker 網址 ★
+// ════════════════════════════════════════
 const WORKER_URL = "https://lucky-3d.lucky20071211.workers.dev/";
-//  例如: "https://3dp-bridge.myname.workers.dev"
-//  部署 Worker 後把上面那行改掉
+const GH_OWNER   = "Lucky-1211";
+const GH_REPO    = "Lucky-3D";
+const GH_RAW     = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main`;
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  STATE
-// ════════════════════════════════════════════
-let products = [], orders = [], settings = { colors:[], materials:[], allTags:[], matColors:{} };
-let isAdmin = false;
-let adminPin = "";
-let activeTag = "all";
-let activeDetailId = null;
-let viewingVer = null;
-let editingId = null;
-let selectedTags = [];
-let pendingStl = null;
-let detailPreviewMode = "img"; // "img" | "3d"
-let todoTab = "print";
+// ════════════════════════════════════════
+let products=[], orders=[], settings={colors:[],materials:[],allTags:[],matColors:{}};
+let isAdmin=false, adminPin="";
+let activeTag="all", activeDetailId=null, viewingVer=null;
+let editingId=null, selectedTags=[], pendingImgUrl="", pendingStlUrl="";
+let dPreviewMode="img", todoTab="print";
 
-// ════════════════════════════════════════════
-//  INIT & AUTH
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════
 window.onload = () => {
-  // check saved session
-  const saved = sessionStorage.getItem("3dp-admin");
-  if (saved) {
-    adminPin = saved; isAdmin = true;
-    startApp();
-  } else {
-    document.getElementById("login-screen").style.display = "flex";
-  }
+  const saved = sessionStorage.getItem("l3d-admin");
+  if (saved) { adminPin=saved; isAdmin=true; startApp(); }
+  else document.getElementById("login-screen").style.display="flex";
 };
 
 async function doLogin() {
   const pin = document.getElementById("pin-input").value.trim();
   if (!pin) return;
-  const res = await apiFetch("/auth", "POST", {}, pin);
+  const res = await api("/auth","POST",{},pin);
   if (res?.ok) {
-    adminPin = pin; isAdmin = true;
-    sessionStorage.setItem("3dp-admin", pin);
-    document.getElementById("login-screen").style.display = "none";
+    adminPin=pin; isAdmin=true;
+    sessionStorage.setItem("l3d-admin",pin);
+    document.getElementById("login-screen").style.display="none";
     startApp();
   } else {
-    document.getElementById("pin-err").textContent = "密碼錯誤";
+    document.getElementById("pin-err").textContent="密碼錯誤";
   }
 }
-
 function continueAsGuest() {
-  isAdmin = false; adminPin = "";
-  document.getElementById("login-screen").style.display = "none";
+  isAdmin=false; adminPin="";
+  document.getElementById("login-screen").style.display="none";
   startApp();
 }
-
 function logout() {
-  sessionStorage.removeItem("3dp-admin");
-  isAdmin = false; adminPin = "";
-  document.getElementById("main-app").style.display = "none";
-  document.getElementById("login-screen").style.display = "flex";
-  document.getElementById("pin-input").value = "";
-  document.getElementById("pin-err").textContent = "";
+  sessionStorage.removeItem("l3d-admin");
+  isAdmin=false; adminPin="";
+  document.getElementById("main-app").style.display="none";
+  document.getElementById("login-screen").style.display="flex";
+  document.getElementById("pin-input").value="";
+  document.getElementById("pin-err").textContent="";
 }
-
 function startApp() {
-  document.getElementById("main-app").style.display = "flex";
-  applyAdminUI();
-  loadAll();
+  document.getElementById("main-app").style.display="flex";
+  applyAdminUI(); loadAll();
 }
-
 function applyAdminUI() {
-  document.querySelectorAll(".admin-only").forEach(el => {
-    el.classList.toggle("visible", isAdmin);
-  });
-  document.getElementById("admin-chip").style.display = isAdmin ? "" : "none";
-  document.getElementById("logout-label").textContent = isAdmin ? "登出管理員" : "切換身份";
+  document.querySelectorAll(".ao").forEach(el=>el.classList.toggle("vis",isAdmin));
+  document.getElementById("admin-chip").style.display=isAdmin?"":"none";
+  document.getElementById("logout-lbl").textContent=isAdmin?"登出管理員":"切換身份";
 }
 
-// ════════════════════════════════════════════
-//  API LAYER
-// ════════════════════════════════════════════
-async function apiFetch(path, method="GET", body, pin) {
-  const headers = { "Content-Type": "application/json" };
-  const p = pin || adminPin;
-  if (p) headers["X-Admin-Pin"] = p;
+// ════════════════════════════════════════
+//  API
+// ════════════════════════════════════════
+async function api(path, method="GET", body, pin) {
+  const headers={"Content-Type":"application/json"};
+  const p=pin||adminPin; if(p) headers["X-Admin-Pin"]=p;
   try {
-    const res = await fetch(WORKER_URL + path, {
-      method,
-      headers,
-      body: body && method !== "GET" ? JSON.stringify(body) : undefined,
-    });
-    if (!res.ok) {
-      const e = await res.json().catch(()=>({}));
-      throw new Error(e.error || `HTTP ${res.status}`);
-    }
+    const res=await fetch(WORKER_URL+path,{method,headers,body:body&&method!=="GET"?JSON.stringify(body):undefined});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error||`HTTP ${res.status}`);}
     return res.json();
-  } catch (e) {
-    showToast("❌ " + e.message, "error");
+  } catch(e) { showToast("❌ "+e.message,"error"); return null; }
+}
+
+async function loadAll() {
+  document.getElementById("pgrid").innerHTML=`<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>載入中…</div>`;
+  const [prods,ords,cfg]=await Promise.all([api("/products"),api("/orders"),api("/settings")]);
+  if(prods) products=prods;
+  if(ords)  orders=ords;
+  if(cfg)   settings={colors:cfg.colors||[],materials:cfg.materials||[],allTags:cfg.allTags||[],matColors:cfg.matColors||{}};
+  render();
+}
+
+// ════════════════════════════════════════
+//  GITHUB UPLOAD (via Worker)
+// ════════════════════════════════════════
+async function uploadToGitHub(file, folder, progressBarId, progressWrapId, labelId) {
+  document.getElementById(progressWrapId).style.display="";
+  document.getElementById(labelId).textContent=`上傳中：${file.name}…`;
+
+  // Read as base64
+  const base64 = await new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>res(e.target.result.split(",")[1]);
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+
+  // Animate progress bar to 60% while uploading
+  const bar=document.getElementById(progressBarId);
+  bar.style.width="60%";
+
+  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const path=`${folder}/${Date.now()}_${safeName}`;
+  const result=await api("/upload","POST",{ path, base64, message:`upload ${safeName}` });
+
+  if(result?.url){
+    bar.style.width="100%";
+    document.getElementById(labelId).textContent=`✅ ${file.name}`;
+    setTimeout(()=>{ document.getElementById(progressWrapId).style.display="none"; bar.style.width="0"; },1500);
+    return result.url;
+  } else {
+    bar.style.width="0"; document.getElementById(progressWrapId).style.display="none";
+    document.getElementById(labelId).textContent="❌ 上傳失敗，請重試";
     return null;
   }
 }
 
-async function loadAll() {
-  showLoading("pgrid");
-  const [prods, ords, cfg] = await Promise.all([
-    apiFetch("/products"),
-    apiFetch("/orders"),
-    apiFetch("/settings"),
-  ]);
-  if (prods) products = prods;
-  if (ords)  orders   = ords;
-  if (cfg)   settings = { colors:cfg.colors||[], materials:cfg.materials||[], allTags:cfg.allTags||[], matColors:cfg.matColors||{} };
-  render();
+// Image handlers
+function handleImgPick(e){const f=e.target.files[0];if(f)doImgUpload(f);}
+function handleImgDrop(e){e.preventDefault();document.getElementById("img-upz").classList.remove("drag");const f=e.dataTransfer.files[0];if(f)doImgUpload(f);}
+async function doImgUpload(file){
+  const url=await uploadToGitHub(file,"images","img-bar","img-progress","img-uplbl");
+  if(url){
+    pendingImgUrl=url;
+    const prev=document.getElementById("f-imgpreview");
+    prev.src=url; prev.style.display="";
+  }
 }
 
-function showLoading(elId) {
-  const el = document.getElementById(elId);
-  if (el) el.innerHTML = `<div class="loading"><div class="spinner"></div>載入中…</div>`;
+// STL handlers
+function handleStlPick(e){const f=e.target.files[0];if(f)doStlUpload(f);}
+function handleStlDrop(e){e.preventDefault();document.getElementById("stl-upz").classList.remove("drag");const f=e.dataTransfer.files[0];if(f)doStlUpload(f);}
+async function doStlUpload(file){
+  const url=await uploadToGitHub(file,"models","stl-bar","stl-progress","stl-uplbl");
+  if(url){
+    pendingStlUrl=url;
+    document.getElementById("stl-current").style.display="";
+    document.getElementById("stl-current").innerHTML=`📦 <a href="${url}" target="_blank" style="color:var(--a2)">${file.name}</a>`;
+  }
 }
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  NAV
-// ════════════════════════════════════════════
-function go(page, opts) {
+// ════════════════════════════════════════
+function go(page,opts){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nb").forEach(b=>b.classList.remove("active"));
   document.getElementById("page-"+page).classList.add("active");
-  const nb = document.getElementById("nav-"+page);
-  if (nb) nb.classList.add("active");
-  if (page==="products") render();
-  if (page==="orders")   renderOrders();
-  if (page==="neworder") renderOrderForm();
-  if (page==="settings") renderSettings();
-  if (page==="todo")     renderTodo(opts?.tab);
+  const nb=document.getElementById("nav-"+page); if(nb)nb.classList.add("active");
+  if(page==="products") render();
+  if(page==="orders")   renderOrders();
+  if(page==="neworder") renderOrderForm();
+  if(page==="settings") renderSettings();
+  if(page==="todo")     renderTodo(opts?.tab);
 }
 
-// ════════════════════════════════════════════
-//  PRODUCTS RENDER
-// ════════════════════════════════════════════
-function tagEmoji(t) {
-  return {"控制盒":"🎛️","計時器":"⏱️","電池架":"🔋","按鈕盒":"🔲","側板":"📐","其他":"📦"}[t]||"📦";
-}
+// ════════════════════════════════════════
+//  PRODUCTS
+// ════════════════════════════════════════
+const tagEmoji=t=>({"控制盒":"🎛️","計時器":"⏱️","電池架":"🔋","按鈕盒":"🔲","側板":"📐","其他":"📦"}[t]||"📦");
 
-function renderTagFilter() {
-  document.getElementById("tag-filter").innerHTML =
-    `<span class="tp ${activeTag==="all"?"active":""}" onclick="setTag('all')">全部</span>` +
+function renderTagFilter(){
+  document.getElementById("tag-filter").innerHTML=
+    `<span class="tp ${activeTag==="all"?"active":""}" onclick="setTag('all')">全部</span>`+
     settings.allTags.map(t=>`<span class="tp ${activeTag===t?"active":""}" onclick="setTag('${t}')">${t}</span>`).join("");
 }
-function setTag(t) { activeTag=t; renderTagFilter(); renderProducts(); }
+function setTag(t){activeTag=t;renderTagFilter();renderProducts();}
 
-function renderProducts() {
+function renderProducts(){
   const q=(document.getElementById("search-input").value||"").toLowerCase();
   const list=products.filter(p=>(activeTag==="all"||p.tags.includes(activeTag))&&(!q||p.name.toLowerCase().includes(q)));
   document.getElementById("pcnt").textContent=`（${list.length} 項）`;
   const grid=document.getElementById("pgrid");
-  if (!list.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="icon">🔍</div><div class="ttl">沒有符合的產品</div></div>`;return;}
+  if(!list.length){grid.innerHTML=`<div class="pgrid"><div class="empty" style="grid-column:1/-1"><div class="icon">🔍</div><div class="ttl">沒有符合的產品</div></div></div>`;return;}
   grid.innerHTML=`<div class="pgrid">`+list.map(p=>{
     const openFix=(p.fixRequests||[]).filter(f=>!f.resolved).length;
     const sdone=p.status==="done";
-    const curVData=p.versions?.find(v=>v.ver===p.curVer);
+    const curVd=p.versions?.find(v=>v.ver===p.curVer);
     const hasImg=!!p.imageUrl;
-    const hasStl=!!curVData?.stl;
+    const hasStl=!!curVd?.stlUrl;
     return `<div class="pcard">
       ${openFix?`<div class="fix-badge">🔧 ${openFix}</div>`:""}
       <div class="cstatus ${sdone?"cs-done":"cs-fix"}">${sdone?"✅ 完成":"🔧 待修改"}</div>
@@ -712,64 +712,60 @@ function renderProducts() {
       <div class="cacts">
         <button class="btn bg bsm" style="flex:1" onclick="openDetail('${p.id}')">詳情</button>
         ${isAdmin?`<button class="btn bs bsm" style="flex:1" onclick="openVerUpdate('${p.id}')">↑ 更新版本</button>`:""}
-        ${isAdmin?`<button class="btn bd bsm" onclick="deleteProduct('${p.id}')" title="刪除產品">🗑</button>`:""}
+        ${isAdmin?`<button class="btn bd bsm" onclick="deleteProduct('${p.id}')">🗑</button>`:""}
         <button class="btn bp bsm" onclick="quickOrder('${p.id}')" title="要列印">🖨️</button>
       </div>
     </div>`;
   }).join("")+`</div>`;
 
   // init mini STL viewers
-  list.filter(p=>p.versions?.find(v=>v.ver===p.curVer)?.stl).forEach(p=>{
+  list.filter(p=>p.versions?.find(v=>v.ver===p.curVer)?.stlUrl).forEach(p=>{
     const el=document.getElementById("mini-"+p.id);
-    if(el) initMini(el,p.versions.find(v=>v.ver===p.curVer).stl);
+    if(el) initMini(el, p.versions.find(v=>v.ver===p.curVer).stlUrl);
   });
 }
 
-function switchCardPrev(e, pid, mode) {
+function switchCardPrev(e,pid,mode){
   e.stopPropagation();
-  document.getElementById(`ppanel-img-${pid}`)?.classList.toggle("hidden", mode!=="img");
-  document.getElementById(`ppanel-3d-${pid}`)?.classList.toggle("hidden", mode!=="3d");
-  document.getElementById(`ptab-img-${pid}`)?.classList.toggle("active", mode==="img");
-  document.getElementById(`ptab-3d-${pid}`)?.classList.toggle("active", mode==="3d");
+  document.getElementById(`ppanel-img-${pid}`)?.classList.toggle("hidden",mode!=="img");
+  document.getElementById(`ppanel-3d-${pid}`)?.classList.toggle("hidden",mode!=="3d");
+  document.getElementById(`ptab-img-${pid}`)?.classList.toggle("active",mode==="img");
+  document.getElementById(`ptab-3d-${pid}`)?.classList.toggle("active",mode==="3d");
 }
 
-function updateStats() {
-  document.getElementById("st-total").textContent = products.length;
-  const openFix=products.reduce((a,p)=>a+(p.fixRequests||[]).filter(f=>!f.resolved).length,0);
-  document.getElementById("st-fix").textContent = openFix;
-  document.getElementById("st-pending").textContent = products.filter(p=>p.status==="fix").length;
-  const active=orders.filter(o=>["unread","received","printing"].includes(o.status)).length;
-  document.getElementById("st-print").textContent = active;
+function updateStats(){
+  document.getElementById("st-total").textContent=products.length;
+  const of=products.reduce((a,p)=>a+(p.fixRequests||[]).filter(f=>!f.resolved).length,0);
+  document.getElementById("st-fix").textContent=of;
+  document.getElementById("st-pending").textContent=products.filter(p=>p.status==="fix").length;
+  const act=orders.filter(o=>["unread","received","printing"].includes(o.status)).length;
+  document.getElementById("st-print").textContent=act;
   const unread=orders.filter(o=>o.status==="unread").length;
-  const bu=document.getElementById("badge-unread");
-  bu.textContent=unread; bu.style.display=unread?"":"none";
-  const tot=openFix+products.filter(p=>p.status==="fix").length+active;
-  const bt=document.getElementById("badge-todo");
-  bt.textContent=tot; bt.style.display=tot?"":"none";
+  const bu=document.getElementById("badge-unread"); bu.textContent=unread; bu.style.display=unread?"":"none";
+  const tot=of+products.filter(p=>p.status==="fix").length+act;
+  const bt=document.getElementById("badge-todo"); bt.textContent=tot; bt.style.display=tot?"":"none";
 }
+function render(){updateStats();renderTagFilter();renderProducts();}
 
-function render() { updateStats(); renderTagFilter(); renderProducts(); }
-
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  TODO
-// ════════════════════════════════════════════
-function switchTodoTab(tab) {
+// ════════════════════════════════════════
+function switchTodoTab(tab){
   todoTab=tab;
   document.getElementById("todo-tab-print").classList.toggle("active",tab==="print");
   document.getElementById("todo-tab-fix").classList.toggle("active",tab==="fix");
   document.getElementById("todo-print-panel").style.display=tab==="print"?"":"none";
   document.getElementById("todo-fix-panel").style.display=tab==="fix"?"":"none";
 }
-function renderTodo(tab) {
-  if(tab) switchTodoTab(tab); else switchTodoTab(todoTab);
+function renderTodo(tab){
+  if(tab)switchTodoTab(tab);else switchTodoTab(todoTab);
   const today=new Date().toISOString().split("T")[0];
-  // Print
-  const pending=orders.filter(o=>["unread","received","printing"].includes(o.status))
-    .sort((a,b)=>{ if(!a.date)return 1;if(!b.date)return -1;return new Date(a.date)-new Date(b.date);});
-  const pp=document.getElementById("todo-print-panel");
   const OS_MAP={unread:"未讀",received:"收到",printing:"列印中"};
-  pp.innerHTML=!pending.length?`<div class="empty"><div class="icon">🎉</div><div class="ttl">沒有待列印的訂單</div></div>`:
-    `<div class="todo-list">`+pending.map(o=>{
+  const pending=orders.filter(o=>["unread","received","printing"].includes(o.status))
+    .sort((a,b)=>{if(!a.date)return 1;if(!b.date)return -1;return new Date(a.date)-new Date(b.date);});
+  document.getElementById("todo-print-panel").innerHTML=!pending.length
+    ?`<div class="empty"><div class="icon">🎉</div><div class="ttl">沒有待列印的訂單</div></div>`
+    :`<div class="todo-list">`+pending.map(o=>{
       const ov=o.date&&o.date<today;
       return `<div class="todo-item ${ov?"urgent":""}" onclick="go('orders')">
         <div class="todo-icon">🖨️</div>
@@ -777,114 +773,126 @@ function renderTodo(tab) {
         <div class="todo-sub">${o.material} · ${o.color} · ${o.qty}組${o.note?" · "+o.note:""}</div></div>
         <div class="todo-meta"><div><span class="os os-${o.status}">${OS_MAP[o.status]}</span></div><div style="margin-top:4px">${o.date||"無期限"}${ov?" ⚠":""}</div></div>
       </div>`;}).join("")+`</div>`;
-  // Fix
+
   const fixList=[];
-  products.forEach(p=>{ if(p.status==="fix") fixList.push({type:"status",p}); (p.fixRequests||[]).filter(f=>!f.resolved).forEach(f=>fixList.push({type:"req",p,f}));});
-  const fp=document.getElementById("todo-fix-panel");
-  fp.innerHTML=!fixList.length?`<div class="empty"><div class="icon">🎉</div><div class="ttl">沒有待修改的項目</div></div>`:
-    `<div class="todo-list">`+fixList.map(item=>item.type==="status"?
-      `<div class="todo-item" onclick="openDetail('${item.p.id}')"><div class="todo-icon">🔧</div><div class="todo-body"><div class="todo-name">${item.p.name}</div><div class="todo-sub">標記為待修改</div></div><div class="todo-meta">${item.p.updatedAt}</div></div>`:
-      `<div class="todo-item" onclick="openDetail('${item.p.id}')"><div class="todo-icon">💬</div><div class="todo-body"><div class="todo-name">${item.p.name}</div><div class="todo-sub">${item.f.author}：${item.f.text}</div></div><div class="todo-meta">${item.f.date}</div></div>`
+  products.forEach(p=>{
+    if(p.status==="fix") fixList.push({type:"status",p});
+    (p.fixRequests||[]).filter(f=>!f.resolved).forEach(f=>fixList.push({type:"req",p,f}));
+  });
+  document.getElementById("todo-fix-panel").innerHTML=!fixList.length
+    ?`<div class="empty"><div class="icon">🎉</div><div class="ttl">沒有待修改的項目</div></div>`
+    :`<div class="todo-list">`+fixList.map(item=>item.type==="status"
+      ?`<div class="todo-item" onclick="openDetail('${item.p.id}')"><div class="todo-icon">🔧</div><div class="todo-body"><div class="todo-name">${item.p.name}</div><div class="todo-sub">標記為待修改</div></div><div class="todo-meta">${item.p.updatedAt}</div></div>`
+      :`<div class="todo-item" onclick="openDetail('${item.p.id}')"><div class="todo-icon">💬</div><div class="todo-body"><div class="todo-name">${item.p.name}</div><div class="todo-sub">${item.f.author}：${item.f.text}</div></div><div class="todo-meta">${item.f.date}</div></div>`
     ).join("")+`</div>`;
 }
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  DETAIL MODAL
-// ════════════════════════════════════════════
-function openDetail(id) {
-  activeDetailId=id; detailPreviewMode="img";
+// ════════════════════════════════════════
+function openDetail(id){
+  activeDetailId=id; dPreviewMode="img";
   const p=products.find(x=>x.id===id);
   viewingVer=p.curVer;
   fillDetail(p,p.curVer);
   openM("modal-detail");
 }
 
-function fillDetail(p,ver) {
+function fillDetail(p,ver){
   document.getElementById("d-name").textContent=p.name;
   document.getElementById("d-updated").textContent=`最後更新：${p.updatedAt}`;
   document.getElementById("d-desc").textContent=p.desc||"（尚未填寫說明）";
+
+  // version selector
   const sel=document.getElementById("d-vsel");
-  sel.innerHTML=p.versions.map(v=>`<option value="${v.ver}" ${v.ver===ver?"selected":""}>${v.ver}${v.ver===p.curVer?" ★":""}</option>`).join("");
+  sel.innerHTML=(p.versions||[]).map(v=>`<option value="${v.ver}" ${v.ver===ver?"selected":""}>${v.ver}${v.ver===p.curVer?" ★":""}</option>`).join("");
+
   // image
   const img=document.getElementById("d-img"),ph=document.getElementById("d-img-ph");
   if(p.imageUrl){img.src=p.imageUrl;img.style.display="";ph.style.display="none";}
   else{img.style.display="none";ph.style.display="";}
-  switchDetailPreview("img");
-  // 3d
-  const vd=p.versions.find(v=>v.ver===ver);
-  if(vd?.stl){document.getElementById("d-dl").style.display="";}
-  else{document.getElementById("d-dl").style.display="none";}
+
+  // STL download link
+  const vd=(p.versions||[]).find(v=>v.ver===ver);
+  const dl=document.getElementById("d-dl");
+  if(vd?.stlUrl){dl.href=vd.stlUrl;dl.style.display="";}
+  else dl.style.display="none";
+
+  switchDPreview("img");
+
   // meta
   document.getElementById("d-meta").innerHTML=[
-    ["目前最新版本",p.curVer],["建議材料",p.recMat||"—"],["狀態",p.status==="done"?"✅ 已完成":"🔧 待修改"],["標籤",p.tags.join(", ")||"—"],
+    ["目前最新版本",p.curVer],
+    ["建議材料",p.recMat||"—"],
+    ["狀態",p.status==="done"?"✅ 已完成":"🔧 待修改"],
+    ["標籤",p.tags.join(", ")||"—"],
   ].map(([k,v])=>`<div class="mr"><span class="mk">${k}</span><span class="mv">${v}</span></div>`).join("");
+
   // changelog
   document.getElementById("d-log").innerHTML=`<div class="clt">版本紀錄</div>`+
-    p.versions.map(v=>`<div class="cli"><span class="clv">${v.ver}</span><span class="cln">${v.note}</span><span class="cld">${v.date}</span></div>`).join("");
+    (p.versions||[]).map(v=>`<div class="cli">
+      <span class="clv">${v.ver}</span>
+      <div><div class="cln">${v.note}</div>${v.stlUrl?`<div class="cli-stl">📦 <a href="${v.stlUrl}" target="_blank" style="color:var(--a2)">下載 STL</a></div>`:""}</div>
+      <span class="cld">${v.date}</span>
+    </div>`).join("");
+
   renderFixPanel(p);
-  document.getElementById("d-edit").onclick=()=>{ closeM("modal-detail"); openEditProduct(activeDetailId); };
+  document.getElementById("d-edit").onclick=()=>{closeM("modal-detail");openEditProduct(activeDetailId);};
 }
 
-function switchDetailPreview(mode) {
-  detailPreviewMode=mode;
-  const imgWrap=document.getElementById("d-img-wrap");
-  const d3=document.getElementById("d-3d");
-  imgWrap.style.display=mode==="img"?"":"none";
-  d3.style.display=mode==="3d"?"":"none";
+function switchDPreview(mode){
+  dPreviewMode=mode;
+  document.getElementById("d-img-wrap").style.display=mode==="img"?"":"none";
+  document.getElementById("d-3d").style.display=mode==="3d"?"":"none";
   document.getElementById("d-prev-img-btn").classList.toggle("active",mode==="img");
   document.getElementById("d-prev-3d-btn").classList.toggle("active",mode==="3d");
-  if(mode==="3d") {
+  if(mode==="3d"){
     const p=products.find(x=>x.id===activeDetailId);
-    const vd=p?.versions.find(v=>v.ver===viewingVer);
-    if(vd?.stl&&!d3.querySelector("canvas")){initDetail(d3,vd.stl);}
-    else if(!vd?.stl){d3.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${viewingVer} 尚未上傳 STL</div></div>`;}
+    const vd=(p?.versions||[]).find(v=>v.ver===viewingVer);
+    const wrap=document.getElementById("d-3d");
+    if(vd?.stlUrl&&!wrap.querySelector("canvas")) initDetailViewer(wrap,vd.stlUrl);
+    else if(!vd?.stlUrl) wrap.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${viewingVer} 尚未上傳 STL</div></div>`;
   }
 }
 
-function switchDVer(ver) {
+function switchDVer(ver){
   viewingVer=ver;
   const p=products.find(x=>x.id===activeDetailId);
-  const vd=p?.versions.find(v=>v.ver===ver);
-  document.getElementById("d-dl").style.display=vd?.stl?"":"none";
-  if(detailPreviewMode==="3d"){
-    const d3=document.getElementById("d-3d"); d3.innerHTML="";
-    if(vd?.stl) initDetail(d3,vd.stl);
-    else d3.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${ver} 尚未上傳 STL</div></div>`;
+  const vd=(p?.versions||[]).find(v=>v.ver===ver);
+  const dl=document.getElementById("d-dl");
+  if(vd?.stlUrl){dl.href=vd.stlUrl;dl.style.display="";}else dl.style.display="none";
+  if(dPreviewMode==="3d"){
+    const wrap=document.getElementById("d-3d"); wrap.innerHTML="";
+    if(vd?.stlUrl) initDetailViewer(wrap,vd.stlUrl);
+    else wrap.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${ver} 尚未上傳 STL</div></div>`;
   }
 }
 
-function dlFromDetail() {
-  const p=products.find(x=>x.id===activeDetailId);
-  const vd=p?.versions.find(v=>v.ver===viewingVer);
-  if(!vd?.stl)return;
-  const a=document.createElement("a");a.href=vd.stl.dataURL;a.download=vd.stl.name||`${p.name}_${viewingVer}.stl`;a.click();
-}
-function orderFromDetail() { closeM("modal-detail"); quickOrder(activeDetailId); }
+function orderFromDetail(){closeM("modal-detail");quickOrder(activeDetailId);}
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  FIX REQUESTS
-// ════════════════════════════════════════════
-function openFixModal() { document.getElementById("fix-text").value=""; openM("modal-fix"); }
+// ════════════════════════════════════════
+function openFixModal(){document.getElementById("fix-text").value="";openM("modal-fix");}
 
-async function submitFix() {
+async function submitFix(){
   const text=document.getElementById("fix-text").value.trim();
   if(!text){showToast("❗ 請填寫說明","info");return;}
   const p=products.find(x=>x.id===activeDetailId);
   const fix={author:document.getElementById("fix-author").value.trim()||"匿名",text,date:new Date().toISOString().split("T")[0],resolved:false};
   const newFixes=[...(p.fixRequests||[]),fix];
-  setLoading("fix-submit-btn",true);
-  const res=await apiFetch(`/products/${p.id}`,"PATCH",{ ...p, fixRequests:newFixes, status:"fix" });
-  setLoading("fix-submit-btn",false);
+  setBtnLoading("fix-submit-btn",true);
+  const res=await api(`/products/${p.id}`,"PATCH",{...p,fixRequests:newFixes,status:"fix"});
+  setBtnLoading("fix-submit-btn",false);
   if(res){
-    const idx=products.findIndex(x=>x.id===p.id);
-    if(idx>=0) products[idx]=res;
+    const i=products.findIndex(x=>x.id===p.id); if(i>=0) products[i]=res;
     closeM("modal-fix"); renderFixPanel(res); updateStats(); renderProducts();
     document.getElementById("dt-fix-btn").click();
     showToast("🔧 修改請求已送出","info");
   }
 }
 
-function renderFixPanel(p) {
+function renderFixPanel(p){
   const fixes=p.fixRequests||[];
   const open=fixes.filter(f=>!f.resolved).length;
   document.getElementById("dt-fix-btn").textContent=`修改請求${open?` (${open})`:""}`;
@@ -899,140 +907,134 @@ function renderFixPanel(p) {
     </div>`).join("");
 }
 
-async function resolveFix(pid,idx) {
+async function resolveFix(pid,idx){
   const p=products.find(x=>x.id===pid);
   const newFixes=p.fixRequests.map((f,i)=>i===idx?{...f,resolved:true}:f);
   const allDone=!newFixes.some(f=>!f.resolved);
-  const res=await apiFetch(`/products/${pid}`,"PATCH",{...p,fixRequests:newFixes,status:allDone?"done":"fix"});
-  if(res){
-    const i=products.findIndex(x=>x.id===pid);if(i>=0)products[i]=res;
-    renderFixPanel(res);updateStats();renderProducts();
-    showToast("✅ 已標記解決","success");
-  }
+  const res=await api(`/products/${pid}`,"PATCH",{...p,fixRequests:newFixes,status:allDone?"done":"fix"});
+  if(res){const i=products.findIndex(x=>x.id===pid);if(i>=0)products[i]=res;renderFixPanel(res);updateStats();renderProducts();showToast("✅ 已標記解決","success");}
 }
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  PRODUCT FORM
-// ════════════════════════════════════════════
-function openNewProduct() {
-  if(!isAdmin){showToast("❌ 需要管理員權限","error");return;}
-  editingId=null;
+// ════════════════════════════════════════
+function openNewProduct(){
+  if(!isAdmin)return;
+  editingId=null; pendingImgUrl=""; pendingStlUrl="";
   document.getElementById("form-title").textContent="新增產品";
   document.getElementById("f-name").value="";
   document.getElementById("f-desc").value="";
   document.getElementById("f-ver").value="v1.0";
   document.getElementById("f-change").value="初版";
   document.getElementById("f-status").value="done";
-  document.getElementById("f-imgurl").value="";
   document.getElementById("f-imgpreview").style.display="none";
-  selectedTags=[];renderTagChips();
-  pendingStl=null;document.getElementById("uplbl").textContent="拖曳或點擊上傳";
-  populateRecMat();
+  document.getElementById("img-uplbl").textContent="拖曳或點擊上傳圖片";
+  document.getElementById("stl-uplbl").textContent="拖曳或點擊上傳 STL / OBJ / 3MF";
+  document.getElementById("stl-current").style.display="none";
+  selectedTags=[]; renderTagChips(); populateRecMat();
   openM("modal-form");
 }
 
-function openEditProduct(id) {
+function openEditProduct(id){
   if(!isAdmin)return;
-  const p=products.find(x=>x.id===id);if(!p)return;
-  editingId=id;
+  const p=products.find(x=>x.id===id); if(!p)return;
+  editingId=id; pendingImgUrl=p.imageUrl||""; pendingStlUrl="";
   document.getElementById("form-title").textContent="編輯產品";
   document.getElementById("f-name").value=p.name;
   document.getElementById("f-desc").value=p.desc||"";
   document.getElementById("f-ver").value=p.curVer;
   document.getElementById("f-change").value="";
   document.getElementById("f-status").value=p.status||"done";
-  document.getElementById("f-imgurl").value=p.imageUrl||"";
   const prev=document.getElementById("f-imgpreview");
-  if(p.imageUrl){prev.src=p.imageUrl;prev.style.display="";}else{prev.style.display="none";}
-  selectedTags=[...p.tags];renderTagChips();
-  pendingStl=null;document.getElementById("uplbl").textContent="拖曳或點擊上傳";
-  populateRecMat();document.getElementById("f-recmat").value=p.recMat||"";
+  if(p.imageUrl){prev.src=p.imageUrl;prev.style.display="";}else prev.style.display="none";
+  document.getElementById("img-uplbl").textContent=p.imageUrl?"重新上傳圖片（選填）":"拖曳或點擊上傳圖片";
+  document.getElementById("stl-uplbl").textContent="拖曳或點擊上傳新版 STL（選填）";
+  const curVd=p.versions?.find(v=>v.ver===p.curVer);
+  const sc=document.getElementById("stl-current");
+  if(curVd?.stlUrl){sc.style.display="";sc.innerHTML=`📦 目前版本有 STL：<a href="${curVd.stlUrl}" target="_blank" style="color:var(--a2)">下載</a>`;}
+  else sc.style.display="none";
+  selectedTags=[...p.tags]; renderTagChips();
+  populateRecMat(); document.getElementById("f-recmat").value=p.recMat||"";
   openM("modal-form");
 }
 
-function openVerUpdate(pid) {
+function openVerUpdate(pid){
   if(!isAdmin)return;
   const p=products.find(x=>x.id===pid);
-  editingId=pid;
+  editingId=pid; pendingImgUrl=p.imageUrl||""; pendingStlUrl="";
   document.getElementById("form-title").textContent=`↑ 更新版本：${p.name}`;
   document.getElementById("f-name").value=p.name;
   document.getElementById("f-desc").value=p.desc||"";
   document.getElementById("f-ver").value=bumpVer(p.curVer);
   document.getElementById("f-change").value="";
   document.getElementById("f-status").value=p.status||"done";
-  document.getElementById("f-imgurl").value=p.imageUrl||"";
   const prev=document.getElementById("f-imgpreview");
-  if(p.imageUrl){prev.src=p.imageUrl;prev.style.display="";}else{prev.style.display="none";}
-  selectedTags=[...p.tags];renderTagChips();
-  pendingStl=null;document.getElementById("uplbl").textContent="上傳新版本 STL（選填）";
-  populateRecMat();document.getElementById("f-recmat").value=p.recMat||"";
+  if(p.imageUrl){prev.src=p.imageUrl;prev.style.display="";}else prev.style.display="none";
+  document.getElementById("img-uplbl").textContent="更換圖片（選填）";
+  document.getElementById("stl-uplbl").textContent="上傳新版本 STL（強烈建議）";
+  document.getElementById("stl-current").style.display="none";
+  selectedTags=[...p.tags]; renderTagChips();
+  populateRecMat(); document.getElementById("f-recmat").value=p.recMat||"";
   openM("modal-form");
 }
 
-function bumpVer(v){const m=v.match(/v(\d+)\.(\d+)/);return m?`v${m[1]}.${parseInt(m[2])+1}`:v+".1";}
-function populateRecMat(){
-  document.getElementById("f-recmat").innerHTML="<option value=''>不指定</option>"+settings.materials.map(m=>`<option value="${m}">${m}</option>`).join("");
-}
+const bumpVer=v=>{const m=v.match(/v(\d+)\.(\d+)/);return m?`v${m[1]}.${parseInt(m[2])+1}`:v+".1";};
+function populateRecMat(){document.getElementById("f-recmat").innerHTML="<option value=''>不指定</option>"+settings.materials.map(m=>`<option value="${m}">${m}</option>`).join("");}
 
-// image URL preview
-document.addEventListener("input", e=>{
-  if(e.target.id==="f-imgurl"){
-    const prev=document.getElementById("f-imgpreview");
-    const val=e.target.value.trim();
-    if(val){prev.src=val;prev.style.display="";prev.onerror=()=>prev.style.display="none";}
-    else prev.style.display="none";
-  }
-});
-
-async function saveProduct() {
+async function saveProduct(){
   if(!isAdmin)return;
   const name=document.getElementById("f-name").value.trim();
   if(!name){showToast("❗ 請填寫產品名稱","info");return;}
   const now=new Date().toISOString().split("T")[0];
   const ver=document.getElementById("f-ver").value.trim()||"v1.0";
   const note=document.getElementById("f-change").value.trim()||"更新";
-  const imgUrl=document.getElementById("f-imgurl").value.trim();
-  setLoading("save-btn",true);
+  const imgUrl=pendingImgUrl||"";
 
+  setBtnLoading("save-btn",true);
+
+  // Build newVersion object
+  const newVersion={ ver, note, date:now, stlUrl:pendingStlUrl||"" };
+
+  const payload={
+    name,
+    desc:document.getElementById("f-desc").value.trim(),
+    tags:[...selectedTags],
+    curVer:ver,
+    recMat:document.getElementById("f-recmat").value,
+    status:document.getElementById("f-status").value,
+    updatedAt:now,
+    imageUrl:imgUrl,
+    fixRequests: editingId ? (products.find(p=>p.id===editingId)?.fixRequests||[]) : [],
+    newVersion,
+  };
+
+  let res;
   if(editingId){
-    const old=products.find(p=>p.id===editingId);
-    const isNewVer=ver!==old.curVer;
-    let vers=[...(old.versions||[])];
-    if(isNewVer) vers=[{ver,note,date:now,stl:pendingStl||null},...vers];
-    else if(pendingStl){const vi=vers.findIndex(v=>v.ver===ver);if(vi>=0)vers[vi]={...vers[vi],stl:pendingStl};else vers.unshift({ver,note,date:now,stl:pendingStl});}
-    const data={...old,name,desc:document.getElementById("f-desc").value.trim(),tags:[...selectedTags],curVer:ver,recMat:document.getElementById("f-recmat").value,status:document.getElementById("f-status").value,updatedAt:now,versions:vers,imageUrl:imgUrl};
-    const res=await apiFetch(`/products/${editingId}`,"PATCH",data);
+    res=await api(`/products/${editingId}`,"PATCH",payload);
     if(res){const i=products.findIndex(p=>p.id===editingId);if(i>=0)products[i]=res;showToast("✅ 產品已更新","success");}
   } else {
-    const newP={name,desc:document.getElementById("f-desc").value.trim(),tags:[...selectedTags],curVer:ver,recMat:document.getElementById("f-recmat").value,status:document.getElementById("f-status").value,updatedAt:now,fixRequests:[],imageUrl:imgUrl,versions:[{ver,note,date:now,stl:pendingStl||null}]};
-    const res=await apiFetch("/products","POST",newP);
+    res=await api("/products","POST",payload);
     if(res){
-      if(res.merged){const i=products.findIndex(p=>p.id===res.id);if(i>=0)products[i]=res;showToast(`🔀 已自動合併到「${name}」，版本 ${ver}`,"success");}
+      if(res.merged){const i=products.findIndex(p=>p.id===res.id);if(i>=0)products[i]=res;showToast(`🔀 已合併到「${name}」版本 ${ver}`,"success");}
       else{products.unshift(res);showToast("✅ 產品已新增","success");}
     }
   }
-  setLoading("save-btn",false);
-  closeM("modal-form");render();
+  setBtnLoading("save-btn",false);
+  if(res){closeM("modal-form");render();}
 }
 
-async function deleteProduct(id) {
+async function deleteProduct(id){
   if(!isAdmin)return;
   const p=products.find(x=>x.id===id);
-  if(!confirm(`確定要刪除「${p?.name}」嗎？此操作無法復原。`))return;
-  const res=await apiFetch(`/products/${id}`,"DELETE");
-  if(res?.ok){
-    products=products.filter(x=>x.id!==id);
-    render();showToast("🗑 產品已刪除","info");
-  }
+  if(!confirm(`確定要刪除「${p?.name}」嗎？`))return;
+  const res=await api(`/products/${id}`,"DELETE");
+  if(res?.ok){products=products.filter(x=>x.id!==id);render();showToast("🗑 產品已刪除","info");}
 }
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  TAG INPUT
-// ════════════════════════════════════════════
-function renderTagChips(){
-  document.getElementById("tchips").innerHTML=selectedTags.map((t,i)=>
-    `<span class="tchip">${t}<button class="tcr" onclick="removeChip(${i})">×</button></span>`).join("");
-}
+// ════════════════════════════════════════
+function renderTagChips(){document.getElementById("tchips").innerHTML=selectedTags.map((t,i)=>`<span class="tchip">${t}<button class="tcr" onclick="removeChip(${i})">×</button></span>`).join("");}
 function removeChip(i){selectedTags.splice(i,1);renderTagChips();}
 function tagIC(){showTDD();}
 function showTDD(){
@@ -1056,24 +1058,13 @@ function tagIK(e){
   if(e.key==="Backspace"&&!v&&selectedTags.length){selectedTags.pop();renderTagChips();}
 }
 
-// ════════════════════════════════════════════
-//  FILE UPLOAD
-// ════════════════════════════════════════════
-function handlePick(e){const f=e.target.files[0];if(f)readF(f);}
-function handleDrop(e){e.preventDefault();document.getElementById("upz").classList.remove("drag");const f=e.dataTransfer.files[0];if(f)readF(f);}
-function readF(file){
-  const r=new FileReader();
-  r.onload=e=>{pendingStl={name:file.name,dataURL:e.target.result};document.getElementById("uplbl").textContent=`✅ ${file.name}`;showToast("📁 檔案已載入","success");};
-  r.readAsDataURL(file);
-}
-
-// ════════════════════════════════════════════
-//  THREE.JS
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
+//  THREE.JS STL VIEWER (loads from URL)
+// ════════════════════════════════════════
 function parseSTL(buf){
   const geom=new THREE.BufferGeometry(),dv=new DataView(buf);
-  const txt=new TextDecoder().decode(buf.slice(0,256));
-  if(txt.includes("facet")){
+  const isAscii=new TextDecoder().decode(buf.slice(0,256)).includes("facet");
+  if(isAscii){
     const lines=new TextDecoder().decode(buf).split("\n"),v=[],n=[];let ni=[0,0,0];
     for(const l of lines){const t=l.trim();if(t.startsWith("facet normal")){const p=t.split(/\s+/);ni=[+p[2],+p[3],+p[4]];}else if(t.startsWith("vertex")){const p=t.split(/\s+/);v.push(+p[1],+p[2],+p[3]);n.push(...ni);}}
     geom.setAttribute("position",new THREE.BufferAttribute(new Float32Array(v),3));
@@ -1086,14 +1077,17 @@ function parseSTL(buf){
   }
   return geom;
 }
-function viewer(el,stlData,interactive){
+
+function viewer(el,stlUrl,interactive){
   const w=el.clientWidth||260,h=el.clientHeight||160;
   const r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setSize(w,h);r.setPixelRatio(Math.min(devicePixelRatio,2));
   const s=new THREE.Scene(),c=new THREE.PerspectiveCamera(45,w/h,.01,100000);
-  s.add(new THREE.AmbientLight(0xffffff,.5));const d=new THREE.DirectionalLight(0xffffff,1);d.position.set(1,2,3);s.add(d);
+  s.add(new THREE.AmbientLight(0xffffff,.5));
+  const d=new THREE.DirectionalLight(0xffffff,1);d.position.set(1,2,3);s.add(d);
   const d2=new THREE.DirectionalLight(0x47b8ff,.25);d2.position.set(-2,-1,1);s.add(d2);
   el.innerHTML="";el.appendChild(r.domElement);
-  fetch(stlData.dataURL).then(x=>x.arrayBuffer()).then(buf=>{
+
+  fetch(stlUrl).then(x=>x.arrayBuffer()).then(buf=>{
     const geom=parseSTL(buf);geom.computeBoundingBox();
     const box=geom.boundingBox,cx=(box.max.x+box.min.x)/2,cy=(box.max.y+box.min.y)/2,cz=(box.max.z+box.min.z)/2;
     const sz=Math.max(box.max.x-box.min.x,box.max.y-box.min.y,box.max.z-box.min.z);
@@ -1106,25 +1100,23 @@ function viewer(el,stlData,interactive){
       r.domElement.addEventListener("mousedown",e=>{drag=true;last={x:e.clientX,y:e.clientY};hint.remove();});
       window.addEventListener("mouseup",()=>drag=false);
       window.addEventListener("mousemove",e=>{if(!drag)return;ry+=(e.clientX-last.x)*.005;rx+=(e.clientY-last.y)*.005;last={x:e.clientX,y:e.clientY};});
+      r.domElement.addEventListener("touchstart",e=>{drag=true;last={x:e.touches[0].clientX,y:e.touches[0].clientY};hint.remove();},{passive:true});
+      window.addEventListener("touchend",()=>drag=false);
+      window.addEventListener("touchmove",e=>{if(!drag)return;ry+=(e.touches[0].clientX-last.x)*.005;rx+=(e.touches[0].clientY-last.y)*.005;last={x:e.touches[0].clientX,y:e.touches[0].clientY};});
     }
     (function frame(){requestAnimationFrame(frame);if(!drag)ry+=.005;mesh.rotation.x=rx;mesh.rotation.y=ry;r.render(s,c);})();
-  });
+  }).catch(()=>{el.innerHTML=`<div class="pholder"><div class="icon">⚠️</div><div style="font-size:11px">無法載入 STL</div></div>`;});
 }
-function initMini(el,stl){viewer(el,stl,false);}
-function initDetail(el,stl){viewer(el,stl,true);}
 
-// ════════════════════════════════════════════
+function initMini(el,stlUrl){viewer(el,stlUrl,false);}
+function initDetailViewer(el,stlUrl){viewer(el,stlUrl,true);}
+
+// ════════════════════════════════════════
 //  ORDERS
-// ════════════════════════════════════════════
-const OS_LIST=[
-  {key:"unread",   label:"未讀"},
-  {key:"received", label:"收到"},
-  {key:"printing", label:"列印中"},
-  {key:"done",     label:"已完成"},
-  {key:"delivered",label:"收到成品"},
-];
+// ════════════════════════════════════════
+const OS_LIST=[{key:"unread",label:"未讀"},{key:"received",label:"收到"},{key:"printing",label:"列印中"},{key:"done",label:"已完成"},{key:"delivered",label:"收到成品"}];
 
-function renderOrderForm() {
+function renderOrderForm(){
   document.getElementById("op-product").innerHTML="<option value=''>— 請選擇 —</option>"+products.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
   document.getElementById("op-mat").innerHTML=settings.materials.map(m=>`<option value="${m}">${m}</option>`).join("");
   onMatChange();
@@ -1134,15 +1126,14 @@ function renderOrderForm() {
   document.getElementById("op-ver").innerHTML="";
 }
 
-function onProductChange() {
+function onProductChange(){
   const pid=document.getElementById("op-product").value;
   const p=products.find(x=>x.id===pid);
-  const vsel=document.getElementById("op-ver");
   if(p){
-    vsel.innerHTML=p.versions.map(v=>`<option value="${v.ver}" ${v.ver===p.curVer?"selected":""}>${v.ver}${v.ver===p.curVer?" (最新)":""}</option>`).join("");
+    document.getElementById("op-ver").innerHTML=(p.versions||[]).map(v=>`<option value="${v.ver}" ${v.ver===p.curVer?"selected":""}>${v.ver}${v.ver===p.curVer?" (最新)":""}</option>`).join("");
     document.getElementById("op-verhint").textContent=`建議材料：${p.recMat||"未指定"}`;
     if(p.recMat&&settings.materials.includes(p.recMat)){document.getElementById("op-mat").value=p.recMat;onMatChange();}
-  }else{vsel.innerHTML="";document.getElementById("op-verhint").textContent="";}
+  }else{document.getElementById("op-ver").innerHTML="";document.getElementById("op-verhint").textContent="";}
 }
 
 function onMatChange(){
@@ -1150,7 +1141,6 @@ function onMatChange(){
   const bound=settings.matColors[mat];
   const avail=bound&&bound.length?settings.colors.filter(c=>bound.includes(c.name)):settings.colors;
   document.getElementById("op-color").innerHTML=avail.map(c=>`<option value="${c.name}">${c.name}</option>`).join("");
-  document.getElementById("op-color-hint").textContent=bound&&bound.length?"":"（此材料未設定顏色綁定，顯示全部顏色）";
 }
 
 async function submitOrder(){
@@ -1158,9 +1148,9 @@ async function submitOrder(){
   if(!pid){showToast("❗ 請選擇產品","info");return;}
   const p=products.find(x=>x.id===pid);
   const data={productId:pid,productName:p.name,productVer:document.getElementById("op-ver").value,color:document.getElementById("op-color").value,material:document.getElementById("op-mat").value,qty:parseInt(document.getElementById("op-qty").value)||1,note:document.getElementById("op-note").value.trim(),status:"unread",date:document.getElementById("op-date").value};
-  setLoading("submit-order-btn",true);
-  const res=await apiFetch("/orders","POST",data);
-  setLoading("submit-order-btn",false);
+  setBtnLoading("submit-order-btn",true);
+  const res=await api("/orders","POST",data);
+  setBtnLoading("submit-order-btn",false);
   if(res){orders.push(res);updateStats();showToast("🖨️ 下單成功！","success");go("orders");}
 }
 
@@ -1182,7 +1172,7 @@ function renderOrders(){
     const ov=o.date&&o.date<today&&!["done","delivered"].includes(o.status);
     const cc=settings.colors.find(c=>c.name===o.color);
     return `<tr>
-      <td><div style="font-weight:600">${o.productName}</div>${o.productUpdated?'<div style="font-size:10px;color:var(--orange)">⚠ 產品已更新</div>':""}</td>
+      <td><div style="font-weight:600">${o.productName}</div>${o.productUpdated?`<div style="font-size:10px;color:var(--orange)">⚠ 產品已更新</div>`:""}</td>
       <td><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--dimmer)">${o.productVer||""}</span></td>
       <td><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:${cc?cc.hex:"#888"};border:1px solid rgba(255,255,255,.2)"></span>${o.color}</span></td>
       <td><span class="tag">${o.material}</span></td>
@@ -1197,72 +1187,51 @@ function renderOrders(){
 
 async function updateOS(id,status){
   const o=orders.find(x=>x.id===id);if(!o)return;
-  const res=await apiFetch(`/orders/${id}`,"PATCH",{...o,status,productUpdated:status==="received"?false:o.productUpdated});
+  const res=await api(`/orders/${id}`,"PATCH",{...o,status,productUpdated:status==="received"?false:o.productUpdated});
   if(res){const i=orders.findIndex(x=>x.id===id);if(i>=0)orders[i]=res;updateStats();}
 }
 async function delOrder(id){
   if(!isAdmin)return;
-  const res=await apiFetch(`/orders/${id}`,"DELETE");
+  const res=await api(`/orders/${id}`,"DELETE");
   if(res?.ok){orders=orders.filter(x=>x.id!==id);renderOrders();updateStats();showToast("🗑 已刪除","info");}
 }
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  SETTINGS
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 function renderSettings(){
-  document.getElementById("color-list").innerHTML=settings.colors.map((c,i)=>
-    `<span class="schip"><span class="sdot" style="background:${c.hex};border:1px solid rgba(255,255,255,.15)"></span>${c.name}<button class="sdel" onclick="delColor(${i})">×</button></span>`).join("");
-  document.getElementById("mat-list").innerHTML=settings.materials.map((m,i)=>
-    `<span class="schip">${m}<button class="sdel" onclick="delMat(${i})">×</button></span>`).join("");
-  document.getElementById("tag-manage-list").innerHTML=settings.allTags.map((t,i)=>
-    `<span class="schip">${t}<button class="sdel" onclick="delTagG(${i})">×</button></span>`).join("");
+  document.getElementById("color-list").innerHTML=settings.colors.map((c,i)=>`<span class="schip"><span class="sdot" style="background:${c.hex};border:1px solid rgba(255,255,255,.15)"></span>${c.name}<button class="sdel" onclick="delColor(${i})">×</button></span>`).join("");
+  document.getElementById("mat-list").innerHTML=settings.materials.map((m,i)=>`<span class="schip">${m}<button class="sdel" onclick="delMat(${i})">×</button></span>`).join("");
+  document.getElementById("tag-manage-list").innerHTML=settings.allTags.map((t,i)=>`<span class="schip">${t}<button class="sdel" onclick="delTagG(${i})">×</button></span>`).join("");
   document.getElementById("mcbind-list").innerHTML=settings.materials.map(m=>{
     const b=settings.matColors[m]||[];
     return `<div class="mcbind-row"><span class="mcbind-mat">${m}</span><div class="mcbind-colors">${settings.colors.map(c=>`<span class="mcbind-chip ${b.includes(c.name)?"selected":""}" onclick="toggleMCB('${m}','${c.name}')"><span class="ccdot" style="background:${c.hex};border:1px solid rgba(255,255,255,.15)"></span>${c.name}</span>`).join("")}</div></div>`;
   }).join("");
 }
-
-function toggleMCB(mat,color){
-  if(!settings.matColors[mat])settings.matColors[mat]=[];
-  const i=settings.matColors[mat].indexOf(color);
-  if(i>=0)settings.matColors[mat].splice(i,1);else settings.matColors[mat].push(color);
-  renderSettings();
-}
-function addColor(){const name=document.getElementById("nc-name").value.trim();const hex=document.getElementById("nc-hex").value;if(!name){showToast("❗ 請填名稱","info");return;}settings.colors.push({name,hex});renderSettings();showToast("✅ 已新增（記得點儲存）","success");document.getElementById("nc-name").value="";}
+function toggleMCB(mat,color){if(!settings.matColors[mat])settings.matColors[mat]=[];const i=settings.matColors[mat].indexOf(color);if(i>=0)settings.matColors[mat].splice(i,1);else settings.matColors[mat].push(color);renderSettings();}
+function addColor(){const name=document.getElementById("nc-name").value.trim();const hex=document.getElementById("nc-hex").value;if(!name){showToast("❗ 請填名稱","info");return;}settings.colors.push({name,hex});renderSettings();showToast("✅ 已新增（記得儲存）","success");document.getElementById("nc-name").value="";}
 function delColor(i){settings.colors.splice(i,1);renderSettings();}
-function addMat(){const n=document.getElementById("nm-name").value.trim();if(!n||settings.materials.includes(n))return;settings.materials.push(n);renderSettings();showToast("✅ 已新增（記得點儲存）","success");document.getElementById("nm-name").value="";}
+function addMat(){const n=document.getElementById("nm-name").value.trim();if(!n||settings.materials.includes(n))return;settings.materials.push(n);renderSettings();showToast("✅ 已新增（記得儲存）","success");document.getElementById("nm-name").value="";}
 function delMat(i){settings.materials.splice(i,1);renderSettings();}
-function addTagG(){const n=document.getElementById("nt-name").value.trim();if(!n||settings.allTags.includes(n))return;settings.allTags.push(n);renderSettings();renderTagFilter();showToast("✅ 已新增（記得點儲存）","success");document.getElementById("nt-name").value="";}
+function addTagG(){const n=document.getElementById("nt-name").value.trim();if(!n||settings.allTags.includes(n))return;settings.allTags.push(n);renderSettings();renderTagFilter();showToast("✅ 已新增（記得儲存）","success");document.getElementById("nt-name").value="";}
 function delTagG(i){settings.allTags.splice(i,1);renderSettings();renderTagFilter();renderProducts();}
+async function saveSettings(){const res=await api("/settings","POST",settings);if(res?.ok)showToast("✅ 設定已儲存","success");}
 
-async function saveSettings(){
-  const res=await apiFetch("/settings","POST",settings);
-  if(res?.ok) showToast("✅ 設定已儲存到 Notion","success");
-}
-
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 //  UTILS
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 function switchMTab(btn,panelId){
-  const modal=btn.closest(".modal");
-  modal.querySelectorAll(".tbb").forEach(b=>b.classList.remove("active"));
-  modal.querySelectorAll(".tbp").forEach(p=>p.classList.remove("active"));
+  const m=btn.closest(".modal");
+  m.querySelectorAll(".tbb").forEach(b=>b.classList.remove("active"));
+  m.querySelectorAll(".tbp").forEach(p=>p.classList.remove("active"));
   btn.classList.add("active");document.getElementById(panelId).classList.add("active");
 }
 function openM(id){document.getElementById(id).classList.add("open");}
 function closeM(id){document.getElementById(id).classList.remove("open");}
 document.querySelectorAll(".mo").forEach(el=>el.addEventListener("click",e=>{if(e.target===el)el.classList.remove("open");}));
-
-function setLoading(btnId,loading){
-  const el=document.getElementById(btnId);if(!el)return;
-  el.disabled=loading;el.textContent=loading?"處理中…":el.dataset.label||el.textContent;
-}
-
+function setBtnLoading(id,loading){const el=document.getElementById(id);if(!el)return;el.disabled=loading;if(loading){el.dataset.orig=el.textContent;el.textContent="處理中…";}else{el.textContent=el.dataset.orig||el.textContent;}}
 let toastT;
-function showToast(msg,type="info"){
-  const el=document.getElementById("toast");el.textContent=msg;el.className=`toast ${type} show`;
-  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),3000);
-}
+function showToast(msg,type="info"){const el=document.getElementById("toast");el.textContent=msg;el.className=`toast ${type} show`;clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),3000);}
 </script>
 </body>
 </html>
