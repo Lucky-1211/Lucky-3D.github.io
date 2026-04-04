@@ -683,7 +683,7 @@ function renderProducts(){
     const openFix=(p.fixRequests||[]).filter(f=>!f.resolved).length;
     const sdone=p.status==="done";
     const curVd=p.versions?.find(v=>v.ver===p.curVer);
-    const hasImg=!!p.imageUrl;
+    const hasImg=!!curVd?.imageUrl;
     const hasStl=!!curVd?.stlUrl;
     return `<div class="pcard">
       ${openFix?`<div class="fix-badge">🔧 ${openFix}</div>`:""}
@@ -694,7 +694,7 @@ function renderProducts(){
           ${hasStl?`<button class="prev-tab ${hasImg?"":"active"}" id="ptab-3d-${p.id}" onclick="switchCardPrev(event,'${p.id}','3d')">📦</button>`:""}
         </div>`:""}
         <div class="prev-panel" id="ppanel-img-${p.id}" style="${!hasImg?"display:none":""}">
-          ${hasImg?`<img class="prev-img" src="${p.imageUrl}" alt="${p.name}" loading="lazy" onclick="openDetail('${p.id}')" onerror="this.parentElement.style.display='none'">`:""}
+          ${hasImg?`<img class="prev-img" src="${curVd.imageUrl}" alt="${p.name}" loading="lazy" onclick="openDetail('${p.id}')" onerror="this.parentElement.style.display='none'">`:""}
         </div>
         <div class="prev-panel ${hasImg?"hidden":""}" id="ppanel-3d-${p.id}">
           ${hasStl?`<div id="mini-${p.id}" style="width:100%;height:100%"></div>`
@@ -809,11 +809,10 @@ function fillDetail(p,ver){
 
   // image
   const img=document.getElementById("d-img"),ph=document.getElementById("d-img-ph");
-  if(p.imageUrl){img.src=p.imageUrl;img.style.display="";ph.style.display="none";}
-  else{img.style.display="none";ph.style.display="";}
-
   // STL download link
   const vd=(p.versions||[]).find(v=>v.ver===ver);
+  if(vd?.imageUrl){img.src=vd.imageUrl;img.style.display="";ph.style.display="none";}
+  else{img.style.display="none";ph.style.display="";}
   const dl=document.getElementById("d-dl");
   if(vd?.stlUrl){dl.href=vd.stlUrl;dl.style.display="";}
   else dl.style.display="none";
@@ -859,8 +858,17 @@ function switchDVer(ver){
   viewingVer=ver;
   const p=products.find(x=>x.id===activeDetailId);
   const vd=(p?.versions||[]).find(v=>v.ver===ver);
+
+  // update image
+  const img=document.getElementById("d-img"),ph=document.getElementById("d-img-ph");
+  if(vd?.imageUrl){img.src=vd.imageUrl;img.style.display="";ph.style.display="none";}
+  else{img.style.display="none";ph.style.display="";}
+
+  // update STL download link
   const dl=document.getElementById("d-dl");
   if(vd?.stlUrl){dl.href=vd.stlUrl;dl.style.display="";}else dl.style.display="none";
+
+  // update 3D preview if active
   if(dPreviewMode==="3d"){
     const wrap=document.getElementById("d-3d"); wrap.innerHTML="";
     if(vd?.stlUrl) initDetailViewer(wrap,vd.stlUrl);
@@ -938,7 +946,8 @@ function openNewProduct(){
 function openEditProduct(id){
   if(!isAdmin)return;
   const p=products.find(x=>x.id===id); if(!p)return;
-  editingId=id; pendingImgUrl=p.imageUrl||""; pendingStlUrl="";
+  const curVd=p.versions?.find(v=>v.ver===p.curVer);
+  editingId=id; pendingImgUrl=curVd?.imageUrl||""; pendingStlUrl="";
   document.getElementById("form-title").textContent="編輯產品";
   document.getElementById("f-name").value=p.name;
   document.getElementById("f-desc").value=p.desc||"";
@@ -946,10 +955,9 @@ function openEditProduct(id){
   document.getElementById("f-change").value="";
   document.getElementById("f-status").value=p.status||"done";
   const prev=document.getElementById("f-imgpreview");
-  if(p.imageUrl){prev.src=p.imageUrl;prev.style.display="";}else prev.style.display="none";
-  document.getElementById("img-uplbl").textContent=p.imageUrl?"重新上傳圖片（選填）":"拖曳或點擊上傳圖片";
+  if(curVd?.imageUrl){prev.src=curVd.imageUrl;prev.style.display="";}else prev.style.display="none";
+  document.getElementById("img-uplbl").textContent=curVd?.imageUrl?"重新上傳圖片（選填）":"拖曳或點擊上傳圖片";
   document.getElementById("stl-uplbl").textContent="拖曳或點擊上傳新版 STL（選填）";
-  const curVd=p.versions?.find(v=>v.ver===p.curVer);
   const sc=document.getElementById("stl-current");
   if(curVd?.stlUrl){sc.style.display="";sc.innerHTML=`📦 目前版本有 STL：<a href="${curVd.stlUrl}" target="_blank" style="color:var(--a2)">下載</a>`;}
   else sc.style.display="none";
@@ -961,7 +969,9 @@ function openEditProduct(id){
 function openVerUpdate(pid){
   if(!isAdmin)return;
   const p=products.find(x=>x.id===pid);
-  editingId=pid; pendingImgUrl=p.imageUrl||""; pendingStlUrl="";
+  const curVd=p.versions?.find(v=>v.ver===p.curVer);
+  // inherit current version's image as default for new version
+  editingId=pid; pendingImgUrl=curVd?.imageUrl||""; pendingStlUrl="";
   document.getElementById("form-title").textContent=`↑ 更新版本：${p.name}`;
   document.getElementById("f-name").value=p.name;
   document.getElementById("f-desc").value=p.desc||"";
@@ -969,8 +979,8 @@ function openVerUpdate(pid){
   document.getElementById("f-change").value="";
   document.getElementById("f-status").value=p.status||"done";
   const prev=document.getElementById("f-imgpreview");
-  if(p.imageUrl){prev.src=p.imageUrl;prev.style.display="";}else prev.style.display="none";
-  document.getElementById("img-uplbl").textContent="更換圖片（選填）";
+  if(curVd?.imageUrl){prev.src=curVd.imageUrl;prev.style.display="";}else prev.style.display="none";
+  document.getElementById("img-uplbl").textContent=curVd?.imageUrl?"更換圖片（選填，不換則沿用上一版）":"拖曳或點擊上傳圖片";
   document.getElementById("stl-uplbl").textContent="上傳新版本 STL（強烈建議）";
   document.getElementById("stl-current").style.display="none";
   selectedTags=[...p.tags]; renderTagChips();
@@ -988,12 +998,11 @@ async function saveProduct(){
   const now=new Date().toISOString().split("T")[0];
   const ver=document.getElementById("f-ver").value.trim()||"v1.0";
   const note=document.getElementById("f-change").value.trim()||"更新";
-  const imgUrl=pendingImgUrl||"";
 
   setBtnLoading("save-btn",true);
 
-  // Build newVersion object
-  const newVersion={ ver, note, date:now, stlUrl:pendingStlUrl||"" };
+  // Build newVersion object — image now lives here, not on the product
+  const newVersion={ ver, note, date:now, stlUrl:pendingStlUrl||"", imageUrl:pendingImgUrl||"" };
 
   const payload={
     name,
@@ -1003,7 +1012,6 @@ async function saveProduct(){
     recMat:document.getElementById("f-recmat").value,
     status:document.getElementById("f-status").value,
     updatedAt:now,
-    imageUrl:imgUrl,
     fixRequests: editingId ? (products.find(p=>p.id===editingId)?.fixRequests||[]) : [],
     newVersion,
   };
