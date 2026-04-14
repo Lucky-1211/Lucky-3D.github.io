@@ -70,12 +70,19 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .tp{padding:5px 12px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:var(--surface);color:var(--dim);cursor:pointer;transition:all .15s}
 .tp:hover{border-color:var(--dim);color:var(--text)}.tp.active{border-color:var(--accent);background:rgba(232,255,71,.1);color:var(--accent)}
 
+/* SECTION DIVIDER */
+.section-div{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dimmer);margin:20px 0 12px;display:flex;align-items:center;gap:10px}
+.section-div::after{content:'';flex:1;height:1px;background:var(--border)}
+
 /* PRODUCT GRID */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .2s;position:relative}
 .pcard:hover{border-color:rgba(232,255,71,.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.pcard.pinned-card{border-color:rgba(232,255,71,.25)}
+.pin-indicator{position:absolute;top:8px;left:8px;z-index:4;font-size:13px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+
 .cprev{height:170px;background:var(--s2);position:relative;overflow:hidden}
-.prev-tabs{position:absolute;top:6px;left:6px;z-index:3;display:flex;gap:4px}
+.prev-tabs{position:absolute;top:6px;right:6px;z-index:3;display:flex;gap:4px}
 .prev-tab{padding:2px 8px;font-size:10px;border-radius:4px;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;background:rgba(14,15,17,.7);color:var(--dim)}
 .prev-tab.active{background:rgba(232,255,71,.2);color:var(--accent);border-color:rgba(232,255,71,.4)}
 .prev-panel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
@@ -94,7 +101,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .cstatus{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;z-index:2}
 .cs-done{background:rgba(77,255,145,.15);color:var(--green);border:1px solid rgba(77,255,145,.3)}
 .cs-fix{background:rgba(255,148,71,.15);color:var(--orange);border:1px solid rgba(255,148,71,.3)}
-.fix-badge{position:absolute;top:8px;left:8px;background:var(--orange);color:#000;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;z-index:4}
+.fix-badge{position:absolute;bottom:8px;left:8px;background:var(--orange);color:#000;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;z-index:4}
 
 /* VERSION SELECT */
 .vsel{background:var(--s2);border:1px solid var(--border);color:var(--text);font-size:11px;font-family:'Space Mono',monospace;padding:3px 6px;border-radius:4px;cursor:pointer;outline:none}
@@ -104,7 +111,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .mo.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:90%;max-width:700px;max-height:90vh;overflow-y:auto}
-.modal-lg{max-width:860px}
+.modal-lg{max-width:900px}
+.modal-xl{max-width:1000px}
 .mhdr{display:flex;align-items:flex-start;justify-content:space-between;padding:22px 24px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
 .mclose{background:var(--s2);border:none;color:var(--dim);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
 .mclose:hover{color:var(--text)}
@@ -136,8 +144,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .upz:hover,.upz.drag{border-color:var(--accent);color:var(--accent)}
 .upz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .upi{font-size:28px;margin-bottom:8px}
-.upload-progress{height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
-.upload-progress-bar{height:100%;background:var(--accent);width:0;transition:width .3s;border-radius:2px}
+.uprog{height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.uprog-bar{height:100%;background:var(--accent);width:0;transition:width .3s;border-radius:2px}
 
 /* STL VIEWER */
 .d3w{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:12px}
@@ -155,6 +163,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .ot td{padding:11px 12px;border-bottom:1px solid rgba(42,45,54,.5);font-size:13px;vertical-align:middle}
 .ot tr:hover td{background:rgba(255,255,255,.02)}
 
+/* BATCH ORDER items inside table */
+.batch-items{margin-top:4px;display:flex;flex-direction:column;gap:2px}
+.batch-item-row{font-size:11px;color:var(--dim);padding:1px 0}
+
 /* ORDER STATUS */
 .os{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
 .os::before{content:'';width:5px;height:5px;border-radius:50%;display:inline-block}
@@ -163,6 +175,21 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .os-printing{background:rgba(71,184,255,.1);color:var(--a2)}.os-printing::before{background:var(--a2)}
 .os-done{background:rgba(77,255,145,.1);color:var(--green)}.os-done::before{background:var(--green)}
 .os-delivered{background:rgba(180,127,255,.15);color:var(--purple)}.os-delivered::before{background:var(--purple)}
+
+/* BATCH ORDER FORM */
+.batch-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.7fr auto;gap:8px;align-items:end;padding:10px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px}
+.batch-row .fl{font-size:11px}
+.batch-row input,.batch-row select{padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:12px;font-family:inherit;outline:none}
+.batch-row input:focus,.batch-row select:focus{border-color:var(--accent)}
+.batch-row select option{background:var(--s2)}
+.batch-del-btn{padding:7px 10px;background:rgba(255,71,71,.1);border:1px solid rgba(255,71,71,.3);border-radius:var(--rs);color:var(--red);cursor:pointer;font-size:14px;line-height:1}
+.batch-del-btn:hover{background:rgba(255,71,71,.2)}
+
+/* GROUPS */
+.group-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.group-name{font-size:14px;font-weight:700;flex:1}
+.group-count{font-size:11px;color:var(--dim);font-family:'Space Mono',monospace}
+.group-actions{display:flex;gap:6px}
 
 /* FIX REQUESTS */
 .fxi{background:rgba(255,148,71,.05);border:1px solid rgba(255,148,71,.2);border-radius:var(--rs);padding:10px 14px;font-size:12px;margin-bottom:8px}
@@ -178,8 +205,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .todo-icon{font-size:20px;flex-shrink:0}
 .todo-body{flex:1}.todo-name{font-size:13px;font-weight:600;margin-bottom:2px}.todo-sub{font-size:11px;color:var(--dim)}
 .todo-meta{font-size:11px;color:var(--dimmer);text-align:right;flex-shrink:0}
-.todo-item.urgent{border-color:rgba(255,71,71,.3);background:rgba(255,71,71,.03)}
-.todo-item.urgent .todo-meta{color:var(--red);font-weight:600}
+.todo-item.urgent{border-color:rgba(255,71,71,.3)}.todo-item.urgent .todo-meta{color:var(--red);font-weight:600}
 
 /* SETTINGS */
 .stsec{margin-bottom:28px}
@@ -222,9 +248,6 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
 
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.stl-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--a2);background:rgba(71,184,255,.1);border:1px solid rgba(71,184,255,.2);padding:1px 6px;border-radius:4px}
-
 /* TOAST */
 .toast{position:fixed;bottom:28px;right:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 18px;font-size:13px;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s}
 .toast.show{transform:translateY(0);opacity:1}
@@ -237,7 +260,8 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
   .logo-title,.nb span:not(.ni),.nav-label,.admin-chip{display:none}
   .stats-row{grid-template-columns:1fr 1fr}
   .fg{grid-template-columns:1fr}.fi.full{grid-column:1}
-  .pi{padding:16px}.modal-lg{max-width:98vw}
+  .pi{padding:16px}.modal-lg,.modal-xl{max-width:98vw}
+  .batch-row{grid-template-columns:1fr 1fr;gap:6px}
 }
 </style>
 </head>
@@ -248,19 +272,15 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
   <div class="login-box">
     <div class="login-logo">LUCKY-3D</div>
     <div class="login-title">管理員登入</div>
-    <input class="pin-input" type="password" id="pin-input" placeholder="••••" maxlength="30"
-      onkeydown="if(event.key==='Enter')doLogin()">
+    <input class="pin-input" type="password" id="pin-input" placeholder="••••" maxlength="30" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="btn bp" style="width:100%;justify-content:center;margin-top:4px" onclick="doLogin()">登入</button>
     <div class="pin-err" id="pin-err"></div>
-    <button class="btn bg bsm" style="margin-top:16px;width:100%;justify-content:center" onclick="continueAsGuest()">
-      以訪客身份繼續（下單 / 修改請求）
-    </button>
+    <button class="btn bg bsm" style="margin-top:16px;width:100%;justify-content:center" onclick="continueAsGuest()">以訪客身份繼續</button>
   </div>
 </div>
 
 <!-- MAIN APP -->
 <div id="main-app" class="app" style="display:none">
-
 <aside class="sidebar">
   <div class="logo">
     <div class="logo-mark">LUCKY-3D</div>
@@ -275,12 +295,12 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
     <div class="nav-label">工具</div>
     <button class="nb" id="nav-neworder" onclick="go('neworder')"><span class="ni">🖨️</span><span>要列印</span></button>
     <button class="nb ao" onclick="openNewProduct()"><span class="ni">➕</span><span>新增產品</span></button>
+    <button class="nb ao" id="nav-groups" onclick="go('groups')"><span class="ni">🗂️</span><span>群組管理</span></button>
     <button class="nb ao" id="nav-settings" onclick="go('settings')"><span class="ni">⚙️</span><span>設定</span></button>
     <div class="nav-label"></div>
     <button class="nb" onclick="logout()"><span class="ni">🚪</span><span id="logout-lbl">切換身份</span></button>
   </nav>
 </aside>
-
 <main class="main">
 
   <!-- PRODUCTS -->
@@ -303,7 +323,6 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
         <div class="sw"><span class="si">🔍</span><input type="text" placeholder="搜尋產品名稱..." id="search-input" oninput="renderProducts()"></div>
         <div class="tf" id="tag-filter"></div>
       </div>
-      <div class="sh"><div><span style="font-size:14px;font-weight:700">所有產品</span><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--dimmer);margin-left:8px" id="pcnt"></span></div></div>
       <div id="pgrid"></div>
     </div>
   </div>
@@ -329,31 +348,48 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
     </div>
     <div class="pi"><div style="overflow-x:auto">
       <table class="ot">
-        <thead><tr><th>產品</th><th>版本</th><th>顏色</th><th>材料</th><th>數量</th><th>備註</th><th>狀態</th><th>期限</th><th></th></tr></thead>
+        <thead><tr><th>訂單</th><th>版本</th><th>顏色</th><th>材料</th><th>數量</th><th>備註</th><th>狀態</th><th>期限</th><th></th></tr></thead>
         <tbody id="orders-tbody"></tbody>
       </table>
       <div id="orders-empty" class="empty" style="display:none"><div class="icon">📋</div><div class="ttl">還沒有列印紀錄</div></div>
     </div></div>
   </div>
 
-  <!-- NEW ORDER -->
+  <!-- NEW ORDER (batch) -->
   <div id="page-neworder" class="page">
-    <div class="topbar"><div class="topbar-title">要列印</div></div>
-    <div class="pi" style="max-width:560px">
-      <div class="fg">
-        <div class="fi full"><label class="fl">選擇產品 *</label><select id="op-product" onchange="onProductChange()"><option value="">— 請選擇 —</option></select></div>
-        <div class="fi full"><label class="fl">選擇版本</label><select id="op-ver"></select><div id="op-verhint" style="font-size:11px;color:var(--dimmer);margin-top:2px"></div></div>
-        <div class="fi"><label class="fl">材料</label><select id="op-mat" onchange="onMatChange()"></select></div>
-        <div class="fi"><label class="fl">顏色</label><select id="op-color"></select></div>
-        <div class="fi"><label class="fl">數量（組）</label><input type="number" id="op-qty" value="1" min="1"></div>
-        <div class="fi"><label class="fl">期限</label><input type="date" id="op-date"></div>
-        <div class="fi full"><label class="fl">備註</label><textarea id="op-note" placeholder="例如：縮小5%…"></textarea></div>
+    <div class="topbar">
+      <div class="topbar-title">要列印</div>
+    </div>
+    <div class="pi">
+      <!-- Quick group add -->
+      <div id="group-quick-bar" style="margin-bottom:16px;display:none">
+        <div class="fl" style="margin-bottom:8px">快速加入群組</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="group-quick-btns"></div>
       </div>
-      <div style="margin-top:20px;display:flex;gap:10px">
-        <button class="btn bp" id="submit-order-btn" onclick="submitOrder()">送出</button>
+
+      <!-- Batch rows -->
+      <div id="batch-rows"></div>
+      <button class="btn bg bsm" onclick="addBatchRow()" style="margin-bottom:20px">＋ 新增一項</button>
+
+      <!-- Shared fields -->
+      <div class="fg" style="max-width:560px;margin-bottom:20px">
+        <div class="fi"><label class="fl">期限（全部適用）</label><input type="date" id="batch-date"></div>
+        <div class="fi"><label class="fl">備註</label><input type="text" id="batch-note" placeholder="整批備註…"></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn bp" id="submit-order-btn" onclick="submitBatchOrder()">送出</button>
         <button class="btn bg" onclick="go('orders')">取消</button>
       </div>
     </div>
+  </div>
+
+  <!-- GROUPS -->
+  <div id="page-groups" class="page">
+    <div class="topbar">
+      <div class="topbar-title">群組管理</div>
+      <div class="topbar-actions"><button class="btn bp" onclick="openNewGroup()">＋ 新增群組</button></div>
+    </div>
+    <div class="pi" id="groups-list"></div>
   </div>
 
   <!-- SETTINGS -->
@@ -364,7 +400,7 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
         <div class="ail"><input type="color" id="nc-hex" value="#ffffff"><input type="text" id="nc-name" placeholder="顏色名稱" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none"><button class="btn bs bsm" onclick="addColor()">新增</button></div>
       </div>
       <div class="stsec"><div class="stitle">🧱 材料管理</div><div class="slist" id="mat-list"></div>
-        <div class="ail"><input type="text" id="nm-name" placeholder="材料名稱（例如：PETG-CF）" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none"><button class="btn bs bsm" onclick="addMat()">新增</button></div>
+        <div class="ail"><input type="text" id="nm-name" placeholder="材料名稱" style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none"><button class="btn bs bsm" onclick="addMat()">新增</button></div>
       </div>
       <div class="stsec"><div class="stitle">🔗 材料↔顏色綁定</div><div style="font-size:12px;color:var(--dim);margin-bottom:12px">選取每種材料可用的顏色</div><div id="mcbind-list"></div></div>
       <div class="stsec"><div class="stitle">🏷️ 標籤管理</div><div class="slist" id="tag-manage-list"></div>
@@ -388,7 +424,6 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
       </div>
     </div>
     <div class="mbody">
-      <!-- Preview mode switcher -->
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <button class="tbb active" id="d-prev-img-btn" onclick="switchDPreview('img')">🖼 圖片</button>
         <button class="tbb" id="d-prev-3d-btn" onclick="switchDPreview('3d')">📦 3D</button>
@@ -398,7 +433,6 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
         <img id="d-img" style="display:none;width:100%;height:100%;object-fit:contain" alt="">
       </div>
       <div class="d3w" id="d-3d" style="display:none"></div>
-
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:12px;color:var(--dim)">版本：</span>
@@ -410,7 +444,6 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
           <button class="btn bg bsm" onclick="orderFromDetail()">🖨️ 要列印</button>
         </div>
       </div>
-
       <div class="tabs">
         <button class="tbb active" onclick="switchMTab(this,'dt-info')">資訊</button>
         <button class="tbb" onclick="switchMTab(this,'dt-log')">版本紀錄</button>
@@ -429,10 +462,7 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
 <!-- PRODUCT FORM MODAL -->
 <div class="mo" id="modal-form">
   <div class="modal">
-    <div class="mhdr">
-      <div style="font-size:16px;font-weight:700" id="form-title">新增產品</div>
-      <button class="mclose" onclick="closeM('modal-form')">✕</button>
-    </div>
+    <div class="mhdr"><div style="font-size:16px;font-weight:700" id="form-title">新增產品</div><button class="mclose" onclick="closeM('modal-form')">✕</button></div>
     <div class="mbody">
       <div class="fg">
         <div class="fi full"><label class="fl">產品名稱 *</label><input type="text" id="f-name" placeholder="例如：控制盒左側板"></div>
@@ -448,43 +478,41 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
         <div class="fi"><label class="fl">建議材料</label><select id="f-recmat"><option value="">不指定</option></select></div>
         <div class="fi full"><label class="fl">這次改了什麼</label><input type="text" id="f-change" placeholder="例如：加厚底部 0.5mm"></div>
         <div class="fi full"><label class="fl">狀態</label><select id="f-status"><option value="done">✅ 已完成</option><option value="fix">🔧 待修改</option></select></div>
-
-        <!-- IMAGE UPLOAD -->
         <div class="fi full">
           <label class="fl">產品圖片（上傳到 GitHub）</label>
-          <div class="upz" id="img-upz"
-            ondragover="event.preventDefault();this.classList.add('drag')"
-            ondragleave="this.classList.remove('drag')"
-            ondrop="handleImgDrop(event)">
+          <div class="upz" id="img-upz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleImgDrop(event)">
             <input type="file" accept="image/*" onchange="handleImgPick(event)">
-            <div class="upi">🖼</div>
-            <div id="img-uplbl">拖曳或點擊上傳圖片（JPG / PNG / WebP）</div>
-            <div class="upload-progress" id="img-progress" style="display:none"><div class="upload-progress-bar" id="img-bar"></div></div>
+            <div class="upi">🖼</div><div id="img-uplbl">拖曳或點擊上傳圖片</div>
+            <div class="uprog" id="img-progress" style="display:none"><div class="uprog-bar" id="img-bar"></div></div>
           </div>
           <img id="f-imgpreview" style="display:none;margin-top:8px;max-height:120px;border-radius:6px;border:1px solid var(--border)" alt="">
-          <input type="hidden" id="f-imgurl">
         </div>
-
-        <!-- STL UPLOAD -->
         <div class="fi full">
-          <label class="fl">3D 檔案（STL / OBJ / 3MF → 上傳到 GitHub）</label>
-          <div class="upz" id="stl-upz"
-            ondragover="event.preventDefault();this.classList.add('drag')"
-            ondragleave="this.classList.remove('drag')"
-            ondrop="handleStlDrop(event)">
-            <input type="file" accept=".stl,.obj,.3mf" onchange="handleStlPick(event)">
-            <div class="upi">📁</div>
-            <div id="stl-uplbl">拖曳或點擊上傳 STL / OBJ / 3MF</div>
-            <div class="upload-progress" id="stl-progress" style="display:none"><div class="upload-progress-bar" id="stl-bar"></div></div>
+          <label class="fl">3D 檔案 STL（上傳到 GitHub）</label>
+          <div class="upz" id="stl-upz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleStlDrop(event)">
+            <input type="file" accept=".stl,.obj" onchange="handleStlPick(event)">
+            <div class="upi">📁</div><div id="stl-uplbl">拖曳或點擊上傳 STL / OBJ</div>
+            <div class="uprog" id="stl-progress" style="display:none"><div class="uprog-bar" id="stl-bar"></div></div>
           </div>
           <div id="stl-current" style="font-size:11px;color:var(--a2);margin-top:4px;display:none"></div>
         </div>
       </div>
     </div>
-    <div class="mfoot">
-      <button class="btn bg" onclick="closeM('modal-form')">取消</button>
-      <button class="btn bp" id="save-btn" onclick="saveProduct()">儲存</button>
+    <div class="mfoot"><button class="btn bg" onclick="closeM('modal-form')">取消</button><button class="btn bp" id="save-btn" onclick="saveProduct()">儲存</button></div>
+  </div>
+</div>
+
+<!-- GROUP FORM MODAL -->
+<div class="mo" id="modal-group">
+  <div class="modal" style="max-width:560px">
+    <div class="mhdr"><div style="font-size:16px;font-weight:700" id="group-form-title">新增群組</div><button class="mclose" onclick="closeM('modal-group')">✕</button></div>
+    <div class="mbody">
+      <div class="fi" style="margin-bottom:16px"><label class="fl">群組名稱 *</label><input type="text" id="g-name" placeholder="例如：伏地挺身"></div>
+      <div class="fl" style="margin-bottom:8px">選擇要加入的產品</div>
+      <div class="sw" style="margin-bottom:10px"><span class="si">🔍</span><input type="text" id="g-search" placeholder="搜尋產品…" oninput="renderGroupProductPicker()"></div>
+      <div id="g-product-picker" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:6px"></div>
     </div>
+    <div class="mfoot"><button class="btn bg" onclick="closeM('modal-group')">取消</button><button class="btn bp" id="group-save-btn" onclick="saveGroup()">儲存</button></div>
   </div>
 </div>
 
@@ -504,20 +532,21 @@ input[type=color]{width:36px;height:36px;border:1px solid var(--border);border-r
 
 <script>
 // ════════════════════════════════════════
-//  ★ CONFIG — 部署後填入你的 Worker 網址 ★
+//  CONFIG
 // ════════════════════════════════════════
-const WORKER_URL = "https://lucky-3d.lucky20071211.workers.dev/";
+const WORKER_URL = "https://lucky-3d.lucky20071211.workers.dev";
 const GH_OWNER   = "Lucky-1211";
-const GH_REPO    = "Lucky-3D";
-const GH_RAW     = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main`;
+const GH_REPO    = "Lucky-3D.github.io";
 
 // ════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════
-let products=[], orders=[], settings={colors:[],materials:[],allTags:[],matColors:{}};
+let products=[], orders=[], groups=[], settings={colors:[],materials:[],allTags:[],matColors:{}};
 let isAdmin=false, adminPin="";
 let activeTag="all", activeDetailId=null, viewingVer=null;
-let editingId=null, selectedTags=[], pendingImgUrl="", pendingStlUrl="";
+let editingId=null, editingGroupId=null;
+let selectedTags=[], selectedGroupProductIds=[];
+let pendingImgUrl="", pendingStlUrl="";
 let dPreviewMode="img", todoTab="print";
 
 // ════════════════════════════════════════
@@ -528,38 +557,16 @@ window.onload = () => {
   if (saved) { adminPin=saved; isAdmin=true; startApp(); }
   else document.getElementById("login-screen").style.display="flex";
 };
-
 async function doLogin() {
-  const pin = document.getElementById("pin-input").value.trim();
-  if (!pin) return;
+  const pin = document.getElementById("pin-input").value.trim(); if(!pin)return;
   const res = await api("/auth","POST",{},pin);
-  if (res?.ok) {
-    adminPin=pin; isAdmin=true;
-    sessionStorage.setItem("l3d-admin",pin);
-    document.getElementById("login-screen").style.display="none";
-    startApp();
-  } else {
-    document.getElementById("pin-err").textContent="密碼錯誤";
-  }
+  if(res?.ok){ adminPin=pin; isAdmin=true; sessionStorage.setItem("l3d-admin",pin); document.getElementById("login-screen").style.display="none"; startApp(); }
+  else document.getElementById("pin-err").textContent="密碼錯誤";
 }
-function continueAsGuest() {
-  isAdmin=false; adminPin="";
-  document.getElementById("login-screen").style.display="none";
-  startApp();
-}
-function logout() {
-  sessionStorage.removeItem("l3d-admin");
-  isAdmin=false; adminPin="";
-  document.getElementById("main-app").style.display="none";
-  document.getElementById("login-screen").style.display="flex";
-  document.getElementById("pin-input").value="";
-  document.getElementById("pin-err").textContent="";
-}
-function startApp() {
-  document.getElementById("main-app").style.display="flex";
-  applyAdminUI(); loadAll();
-}
-function applyAdminUI() {
+function continueAsGuest(){ isAdmin=false; adminPin=""; document.getElementById("login-screen").style.display="none"; startApp(); }
+function logout(){ sessionStorage.removeItem("l3d-admin"); isAdmin=false; adminPin=""; document.getElementById("main-app").style.display="none"; document.getElementById("login-screen").style.display="flex"; document.getElementById("pin-input").value=""; document.getElementById("pin-err").textContent=""; }
+function startApp(){ document.getElementById("main-app").style.display="flex"; applyAdminUI(); loadAll(); }
+function applyAdminUI(){
   document.querySelectorAll(".ao").forEach(el=>el.classList.toggle("vis",isAdmin));
   document.getElementById("admin-chip").style.display=isAdmin?"":"none";
   document.getElementById("logout-lbl").textContent=isAdmin?"登出管理員":"切換身份";
@@ -568,83 +575,54 @@ function applyAdminUI() {
 // ════════════════════════════════════════
 //  API
 // ════════════════════════════════════════
-async function api(path, method="GET", body, pin) {
-  const headers={"Content-Type":"application/json"};
-  const p=pin||adminPin; if(p) headers["X-Admin-Pin"]=p;
-  try {
-    const res=await fetch(WORKER_URL+path,{method,headers,body:body&&method!=="GET"?JSON.stringify(body):undefined});
+async function api(path, method="GET", body, pin){
+  const h={"Content-Type":"application/json"};
+  const p=pin||adminPin; if(p)h["X-Admin-Pin"]=p;
+  try{
+    const res=await fetch(WORKER_URL+path,{method,headers:h,body:body&&method!=="GET"?JSON.stringify(body):undefined});
     if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error||`HTTP ${res.status}`);}
     return res.json();
-  } catch(e) { showToast("❌ "+e.message,"error"); return null; }
+  }catch(e){showToast("❌ "+e.message,"error");return null;}
 }
 
-async function loadAll() {
+async function loadAll(){
   document.getElementById("pgrid").innerHTML=`<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>載入中…</div>`;
-  const [prods,ords,cfg]=await Promise.all([api("/products"),api("/orders"),api("/settings")]);
+  const [prods,ords,grps,cfg]=await Promise.all([api("/products"),api("/orders"),api("/groups"),api("/settings")]);
   if(prods) products=prods;
   if(ords)  orders=ords;
+  if(grps)  groups=grps;
   if(cfg)   settings={colors:cfg.colors||[],materials:cfg.materials||[],allTags:cfg.allTags||[],matColors:cfg.matColors||{}};
   render();
 }
 
 // ════════════════════════════════════════
-//  GITHUB UPLOAD (via Worker)
+//  GITHUB UPLOAD
 // ════════════════════════════════════════
-async function uploadToGitHub(file, folder, progressBarId, progressWrapId, labelId) {
-  document.getElementById(progressWrapId).style.display="";
-  document.getElementById(labelId).textContent=`上傳中：${file.name}…`;
-
-  // Read as base64
-  const base64 = await new Promise((res,rej)=>{
-    const r=new FileReader();
-    r.onload=e=>res(e.target.result.split(",")[1]);
-    r.onerror=rej;
-    r.readAsDataURL(file);
-  });
-
-  // Animate progress bar to 60% while uploading
-  const bar=document.getElementById(progressBarId);
-  bar.style.width="60%";
-
+async function uploadToGH(file, folder, barId, wrapId, lblId){
+  document.getElementById(wrapId).style.display="";
+  document.getElementById(lblId).textContent=`上傳中：${file.name}…`;
+  const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(file);});
+  document.getElementById(barId).style.width="60%";
   const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
   const path=`${folder}/${Date.now()}_${safeName}`;
-  const result=await api("/upload","POST",{ path, base64, message:`upload ${safeName}` });
-
+  const result=await api("/upload","POST",{path,base64,message:`upload ${safeName}`});
   if(result?.url){
-    bar.style.width="100%";
-    document.getElementById(labelId).textContent=`✅ ${file.name}`;
-    setTimeout(()=>{ document.getElementById(progressWrapId).style.display="none"; bar.style.width="0"; },1500);
+    document.getElementById(barId).style.width="100%";
+    document.getElementById(lblId).textContent=`✅ ${file.name}`;
+    setTimeout(()=>{document.getElementById(wrapId).style.display="none";document.getElementById(barId).style.width="0";},1500);
     return result.url;
-  } else {
-    bar.style.width="0"; document.getElementById(progressWrapId).style.display="none";
-    document.getElementById(labelId).textContent="❌ 上傳失敗，請重試";
+  }else{
+    document.getElementById(barId).style.width="0"; document.getElementById(wrapId).style.display="none";
+    document.getElementById(lblId).textContent="❌ 上傳失敗";
     return null;
   }
 }
-
-// Image handlers
 function handleImgPick(e){const f=e.target.files[0];if(f)doImgUpload(f);}
 function handleImgDrop(e){e.preventDefault();document.getElementById("img-upz").classList.remove("drag");const f=e.dataTransfer.files[0];if(f)doImgUpload(f);}
-async function doImgUpload(file){
-  const url=await uploadToGitHub(file,"images","img-bar","img-progress","img-uplbl");
-  if(url){
-    pendingImgUrl=url;
-    const prev=document.getElementById("f-imgpreview");
-    prev.src=url; prev.style.display="";
-  }
-}
-
-// STL handlers
+async function doImgUpload(file){const url=await uploadToGH(file,"images","img-bar","img-progress","img-uplbl");if(url){pendingImgUrl=url;const p=document.getElementById("f-imgpreview");p.src=url;p.style.display="";}}
 function handleStlPick(e){const f=e.target.files[0];if(f)doStlUpload(f);}
 function handleStlDrop(e){e.preventDefault();document.getElementById("stl-upz").classList.remove("drag");const f=e.dataTransfer.files[0];if(f)doStlUpload(f);}
-async function doStlUpload(file){
-  const url=await uploadToGitHub(file,"models","stl-bar","stl-progress","stl-uplbl");
-  if(url){
-    pendingStlUrl=url;
-    document.getElementById("stl-current").style.display="";
-    document.getElementById("stl-current").innerHTML=`📦 <a href="${url}" target="_blank" style="color:var(--a2)">${file.name}</a>`;
-  }
-}
+async function doStlUpload(file){const url=await uploadToGH(file,"models","stl-bar","stl-progress","stl-uplbl");if(url){pendingStlUrl=url;const sc=document.getElementById("stl-current");sc.style.display="";sc.innerHTML=`📦 <a href="${url}" target="_blank" style="color:var(--a2)">${file.name}</a>`;}}
 
 // ════════════════════════════════════════
 //  NAV
@@ -656,7 +634,8 @@ function go(page,opts){
   const nb=document.getElementById("nav-"+page); if(nb)nb.classList.add("active");
   if(page==="products") render();
   if(page==="orders")   renderOrders();
-  if(page==="neworder") renderOrderForm();
+  if(page==="neworder") renderNewOrder();
+  if(page==="groups")   renderGroups();
   if(page==="settings") renderSettings();
   if(page==="todo")     renderTodo(opts?.tab);
 }
@@ -675,54 +654,69 @@ function setTag(t){activeTag=t;renderTagFilter();renderProducts();}
 
 function renderProducts(){
   const q=(document.getElementById("search-input").value||"").toLowerCase();
-  const list=products.filter(p=>(activeTag==="all"||p.tags.includes(activeTag))&&(!q||p.name.toLowerCase().includes(q)));
-  document.getElementById("pcnt").textContent=`（${list.length} 項）`;
+  const all=products.filter(p=>(activeTag==="all"||p.tags.includes(activeTag))&&(!q||p.name.toLowerCase().includes(q)));
+  const pinned=all.filter(p=>p.pinned);
+  const normal=all.filter(p=>!p.pinned);
   const grid=document.getElementById("pgrid");
-  if(!list.length){grid.innerHTML=`<div class="pgrid"><div class="empty" style="grid-column:1/-1"><div class="icon">🔍</div><div class="ttl">沒有符合的產品</div></div></div>`;return;}
-  grid.innerHTML=`<div class="pgrid">`+list.map(p=>{
-    const openFix=(p.fixRequests||[]).filter(f=>!f.resolved).length;
-    const sdone=p.status==="done";
-    const curVd=p.versions?.find(v=>v.ver===p.curVer);
-    const hasImg=!!curVd?.imageUrl;
-    const hasStl=!!curVd?.stlUrl;
-    return `<div class="pcard">
-      ${openFix?`<div class="fix-badge">🔧 ${openFix}</div>`:""}
-      <div class="cstatus ${sdone?"cs-done":"cs-fix"}">${sdone?"✅ 完成":"🔧 待修改"}</div>
-      <div class="cprev">
-        ${(hasImg||hasStl)?`<div class="prev-tabs">
-          ${hasImg?`<button class="prev-tab active" id="ptab-img-${p.id}" onclick="switchCardPrev(event,'${p.id}','img')">🖼</button>`:""}
-          ${hasStl?`<button class="prev-tab ${hasImg?"":"active"}" id="ptab-3d-${p.id}" onclick="switchCardPrev(event,'${p.id}','3d')">📦</button>`:""}
-        </div>`:""}
-        <div class="prev-panel" id="ppanel-img-${p.id}" style="${!hasImg?"display:none":""}">
-          ${hasImg?`<img class="prev-img" src="${curVd.imageUrl}" alt="${p.name}" loading="lazy" onclick="openDetail('${p.id}')" onerror="this.parentElement.style.display='none'">`:""}
-        </div>
-        <div class="prev-panel ${hasImg?"hidden":""}" id="ppanel-3d-${p.id}">
-          ${hasStl?`<div id="mini-${p.id}" style="width:100%;height:100%"></div>`
-            :`<div class="pholder" onclick="openDetail('${p.id}')"><div class="icon">${tagEmoji(p.tags[0])}</div><div style="font-size:11px;color:var(--dimmer)">點擊查看</div></div>`}
-        </div>
-      </div>
-      <div class="cbody">
-        <div class="cname" onclick="openDetail('${p.id}')">${p.name}</div>
-        <div class="cdesc">${p.desc||"—"}</div>
-        <div class="cfooter">
-          <div class="ctags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
-          <span class="cvbadge">${p.curVer}</span>
-        </div>
-      </div>
-      <div class="cacts">
-        <button class="btn bg bsm" style="flex:1" onclick="openDetail('${p.id}')">詳情</button>
-        ${isAdmin?`<button class="btn bs bsm" style="flex:1" onclick="openVerUpdate('${p.id}')">↑ 更新版本</button>`:""}
-        ${isAdmin?`<button class="btn bd bsm" onclick="deleteProduct('${p.id}')">🗑</button>`:""}
-        <button class="btn bp bsm" onclick="quickOrder('${p.id}')" title="要列印">🖨️</button>
-      </div>
-    </div>`;
-  }).join("")+`</div>`;
 
-  // init mini STL viewers
-  list.filter(p=>p.versions?.find(v=>v.ver===p.curVer)?.stlUrl).forEach(p=>{
+  if(!all.length){grid.innerHTML=`<div class="pgrid"><div class="empty" style="grid-column:1/-1"><div class="icon">🔍</div><div class="ttl">沒有符合的產品</div></div></div>`;return;}
+
+  let html="";
+  if(pinned.length){
+    html+=`<div class="section-div">📌 置頂</div><div class="pgrid">${pinned.map(renderCard).join("")}</div>`;
+  }
+  if(normal.length){
+    if(pinned.length) html+=`<div class="section-div">所有產品</div>`;
+    html+=`<div class="pgrid">${normal.map(renderCard).join("")}</div>`;
+  }
+  grid.innerHTML=html;
+
+  // init mini STL
+  all.filter(p=>p.versions?.find(v=>v.ver===p.curVer)?.stlUrl).forEach(p=>{
     const el=document.getElementById("mini-"+p.id);
     if(el) initMini(el, p.versions.find(v=>v.ver===p.curVer).stlUrl);
   });
+}
+
+function renderCard(p){
+  const openFix=(p.fixRequests||[]).filter(f=>!f.resolved).length;
+  const sdone=p.status==="done";
+  const curVd=p.versions?.find(v=>v.ver===p.curVer);
+  const hasImg=!!curVd?.imageUrl;
+  const hasStl=!!curVd?.stlUrl;
+  return `<div class="pcard ${p.pinned?"pinned-card":""}">
+    ${p.pinned?`<div class="pin-indicator">📌</div>`:""}
+    ${openFix?`<div class="fix-badge">🔧 ${openFix}</div>`:""}
+    <div class="cstatus ${sdone?"cs-done":"cs-fix"}">${sdone?"✅ 完成":"🔧 待修改"}</div>
+    <div class="cprev">
+      ${(hasImg||hasStl)?`<div class="prev-tabs">
+        ${hasImg?`<button class="prev-tab active" id="ptab-img-${p.id}" onclick="switchCardPrev(event,'${p.id}','img')">🖼</button>`:""}
+        ${hasStl?`<button class="prev-tab ${hasImg?"":"active"}" id="ptab-3d-${p.id}" onclick="switchCardPrev(event,'${p.id}','3d')">📦</button>`:""}
+      </div>`:""}
+      <div class="prev-panel" id="ppanel-img-${p.id}" style="${!hasImg?"display:none":""}">
+        ${hasImg?`<img class="prev-img" src="${curVd.imageUrl}" alt="${p.name}" loading="lazy" onclick="openDetail('${p.id}')" onerror="this.parentElement.style.display='none'">`:""}
+      </div>
+      <div class="prev-panel ${hasImg?"hidden":""}" id="ppanel-3d-${p.id}">
+        ${hasStl?`<div id="mini-${p.id}" style="width:100%;height:100%"></div>`
+          :`<div class="pholder" onclick="openDetail('${p.id}')"><div class="icon">${tagEmoji(p.tags[0])}</div><div style="font-size:11px;color:var(--dimmer)">點擊查看</div></div>`}
+      </div>
+    </div>
+    <div class="cbody">
+      <div class="cname" onclick="openDetail('${p.id}')">${p.name}</div>
+      <div class="cdesc">${p.desc||"—"}</div>
+      <div class="cfooter">
+        <div class="ctags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+        <span class="cvbadge">${p.curVer}</span>
+      </div>
+    </div>
+    <div class="cacts">
+      <button class="btn bg bsm" style="flex:1" onclick="openDetail('${p.id}')">詳情</button>
+      ${isAdmin?`<button class="btn bs bsm" style="flex:1" onclick="openVerUpdate('${p.id}')">↑ 更新</button>`:""}
+      ${isAdmin?`<button class="btn ${p.pinned?"bp":"bg"} bsm" onclick="togglePin('${p.id}',${!p.pinned})" title="${p.pinned?"取消置頂":"置頂"}">📌</button>`:""}
+      ${isAdmin?`<button class="btn bd bsm" onclick="deleteProduct('${p.id}')">🗑</button>`:""}
+      <button class="btn bp bsm" onclick="quickOrder('${p.id}')" title="要列印">🖨️</button>
+    </div>
+  </div>`;
 }
 
 function switchCardPrev(e,pid,mode){
@@ -733,6 +727,11 @@ function switchCardPrev(e,pid,mode){
   document.getElementById(`ptab-3d-${pid}`)?.classList.toggle("active",mode==="3d");
 }
 
+async function togglePin(id, pinned){
+  const res=await api(`/products/${id}/pin`,"PATCH",{pinned});
+  if(res?.ok){const p=products.find(x=>x.id===id);if(p)p.pinned=pinned;renderProducts();showToast(pinned?"📌 已置頂":"取消置頂","success");}
+}
+
 function updateStats(){
   document.getElementById("st-total").textContent=products.length;
   const of=products.reduce((a,p)=>a+(p.fixRequests||[]).filter(f=>!f.resolved).length,0);
@@ -741,10 +740,11 @@ function updateStats(){
   const act=orders.filter(o=>["unread","received","printing"].includes(o.status)).length;
   document.getElementById("st-print").textContent=act;
   const unread=orders.filter(o=>o.status==="unread").length;
-  const bu=document.getElementById("badge-unread"); bu.textContent=unread; bu.style.display=unread?"":"none";
+  const bu=document.getElementById("badge-unread");bu.textContent=unread;bu.style.display=unread?"":"none";
   const tot=of+products.filter(p=>p.status==="fix").length+act;
-  const bt=document.getElementById("badge-todo"); bt.textContent=tot; bt.style.display=tot?"":"none";
+  const bt=document.getElementById("badge-todo");bt.textContent=tot;bt.style.display=tot?"":"none";
 }
+
 function render(){updateStats();renderTagFilter();renderProducts();}
 
 // ════════════════════════════════════════
@@ -763,20 +763,22 @@ function renderTodo(tab){
   const OS_MAP={unread:"未讀",received:"收到",printing:"列印中"};
   const pending=orders.filter(o=>["unread","received","printing"].includes(o.status))
     .sort((a,b)=>{if(!a.date)return 1;if(!b.date)return -1;return new Date(a.date)-new Date(b.date);});
-  document.getElementById("todo-print-panel").innerHTML=!pending.length
-    ?`<div class="empty"><div class="icon">🎉</div><div class="ttl">沒有待列印的訂單</div></div>`
+  const pp=document.getElementById("todo-print-panel");
+  pp.innerHTML=!pending.length?`<div class="empty"><div class="icon">🎉</div><div class="ttl">沒有待列印的訂單</div></div>`
     :`<div class="todo-list">`+pending.map(o=>{
       const ov=o.date&&o.date<today;
+      const name=o.items?.length?`批量訂單（${o.items.length}項）`:o.productName;
+      const sub=o.items?.length?o.items.map(i=>`${i.productName} ${i.ver} · ${i.material} ${i.color} ×${i.qty}`).join("、")
+        :`${o.material} · ${o.color} · ${o.qty}組${o.note?" · "+o.note:""}`;
       return `<div class="todo-item ${ov?"urgent":""}" onclick="go('orders')">
         <div class="todo-icon">🖨️</div>
-        <div class="todo-body"><div class="todo-name">${o.productName} <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--dimmer)">${o.productVer}</span></div>
-        <div class="todo-sub">${o.material} · ${o.color} · ${o.qty}組${o.note?" · "+o.note:""}</div></div>
+        <div class="todo-body"><div class="todo-name">${name}</div><div class="todo-sub">${sub}</div></div>
         <div class="todo-meta"><div><span class="os os-${o.status}">${OS_MAP[o.status]}</span></div><div style="margin-top:4px">${o.date||"無期限"}${ov?" ⚠":""}</div></div>
       </div>`;}).join("")+`</div>`;
 
   const fixList=[];
   products.forEach(p=>{
-    if(p.status==="fix") fixList.push({type:"status",p});
+    if(p.status==="fix")fixList.push({type:"status",p});
     (p.fixRequests||[]).filter(f=>!f.resolved).forEach(f=>fixList.push({type:"req",p,f}));
   });
   document.getElementById("todo-fix-panel").innerHTML=!fixList.length
@@ -802,39 +804,21 @@ function fillDetail(p,ver){
   document.getElementById("d-name").textContent=p.name;
   document.getElementById("d-updated").textContent=`最後更新：${p.updatedAt}`;
   document.getElementById("d-desc").textContent=p.desc||"（尚未填寫說明）";
-
-  // version selector
   const sel=document.getElementById("d-vsel");
   sel.innerHTML=(p.versions||[]).map(v=>`<option value="${v.ver}" ${v.ver===ver?"selected":""}>${v.ver}${v.ver===p.curVer?" ★":""}</option>`).join("");
-
-  // image
-  const img=document.getElementById("d-img"),ph=document.getElementById("d-img-ph");
-  // STL download link
   const vd=(p.versions||[]).find(v=>v.ver===ver);
+  const img=document.getElementById("d-img"),ph=document.getElementById("d-img-ph");
   if(vd?.imageUrl){img.src=vd.imageUrl;img.style.display="";ph.style.display="none";}
   else{img.style.display="none";ph.style.display="";}
   const dl=document.getElementById("d-dl");
-  if(vd?.stlUrl){dl.href=vd.stlUrl;dl.style.display="";}
-  else dl.style.display="none";
-
+  if(vd?.stlUrl){dl.href=vd.stlUrl;dl.style.display="";}else dl.style.display="none";
   switchDPreview("img");
-
-  // meta
   document.getElementById("d-meta").innerHTML=[
-    ["目前最新版本",p.curVer],
-    ["建議材料",p.recMat||"—"],
-    ["狀態",p.status==="done"?"✅ 已完成":"🔧 待修改"],
-    ["標籤",p.tags.join(", ")||"—"],
+    ["目前最新版本",p.curVer],["建議材料",p.recMat||"—"],
+    ["狀態",p.status==="done"?"✅ 已完成":"🔧 待修改"],["標籤",p.tags.join(", ")||"—"],
   ].map(([k,v])=>`<div class="mr"><span class="mk">${k}</span><span class="mv">${v}</span></div>`).join("");
-
-  // changelog
   document.getElementById("d-log").innerHTML=`<div class="clt">版本紀錄</div>`+
-    (p.versions||[]).map(v=>`<div class="cli">
-      <span class="clv">${v.ver}</span>
-      <div><div class="cln">${v.note}</div>${v.stlUrl?`<div class="cli-stl">📦 <a href="${v.stlUrl}" target="_blank" style="color:var(--a2)">下載 STL</a></div>`:""}</div>
-      <span class="cld">${v.date}</span>
-    </div>`).join("");
-
+    (p.versions||[]).map(v=>`<div class="cli"><span class="clv">${v.ver}</span><div><div class="cln">${v.note}</div>${v.stlUrl?`<div class="cli-stl">📦 <a href="${v.stlUrl}" target="_blank" style="color:var(--a2)">下載 STL</a></div>`:""}</div><span class="cld">${v.date}</span></div>`).join("");
   renderFixPanel(p);
   document.getElementById("d-edit").onclick=()=>{closeM("modal-detail");openEditProduct(activeDetailId);};
 }
@@ -849,8 +833,8 @@ function switchDPreview(mode){
     const p=products.find(x=>x.id===activeDetailId);
     const vd=(p?.versions||[]).find(v=>v.ver===viewingVer);
     const wrap=document.getElementById("d-3d");
-    if(vd?.stlUrl&&!wrap.querySelector("canvas")) initDetailViewer(wrap,vd.stlUrl);
-    else if(!vd?.stlUrl) wrap.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${viewingVer} 尚未上傳 STL</div></div>`;
+    if(vd?.stlUrl&&!wrap.querySelector("canvas"))initDetailViewer(wrap,vd.stlUrl);
+    else if(!vd?.stlUrl)wrap.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${viewingVer} 尚未上傳 STL</div></div>`;
   }
 }
 
@@ -858,31 +842,23 @@ function switchDVer(ver){
   viewingVer=ver;
   const p=products.find(x=>x.id===activeDetailId);
   const vd=(p?.versions||[]).find(v=>v.ver===ver);
-
-  // update image
   const img=document.getElementById("d-img"),ph=document.getElementById("d-img-ph");
   if(vd?.imageUrl){img.src=vd.imageUrl;img.style.display="";ph.style.display="none";}
   else{img.style.display="none";ph.style.display="";}
-
-  // update STL download link
   const dl=document.getElementById("d-dl");
   if(vd?.stlUrl){dl.href=vd.stlUrl;dl.style.display="";}else dl.style.display="none";
-
-  // update 3D preview if active
   if(dPreviewMode==="3d"){
-    const wrap=document.getElementById("d-3d"); wrap.innerHTML="";
-    if(vd?.stlUrl) initDetailViewer(wrap,vd.stlUrl);
+    const wrap=document.getElementById("d-3d");wrap.innerHTML="";
+    if(vd?.stlUrl)initDetailViewer(wrap,vd.stlUrl);
     else wrap.innerHTML=`<div class="pholder"><div class="icon" style="font-size:50px">📦</div><div style="font-size:12px;color:var(--dimmer);margin-top:8px">版本 ${ver} 尚未上傳 STL</div></div>`;
   }
 }
-
 function orderFromDetail(){closeM("modal-detail");quickOrder(activeDetailId);}
 
 // ════════════════════════════════════════
 //  FIX REQUESTS
 // ════════════════════════════════════════
 function openFixModal(){document.getElementById("fix-text").value="";openM("modal-fix");}
-
 async function submitFix(){
   const text=document.getElementById("fix-text").value.trim();
   if(!text){showToast("❗ 請填寫說明","info");return;}
@@ -892,14 +868,8 @@ async function submitFix(){
   setBtnLoading("fix-submit-btn",true);
   const res=await api(`/products/${p.id}`,"PATCH",{...p,fixRequests:newFixes,status:"fix"});
   setBtnLoading("fix-submit-btn",false);
-  if(res){
-    const i=products.findIndex(x=>x.id===p.id); if(i>=0) products[i]=res;
-    closeM("modal-fix"); renderFixPanel(res); updateStats(); renderProducts();
-    document.getElementById("dt-fix-btn").click();
-    showToast("🔧 修改請求已送出","info");
-  }
+  if(res){const i=products.findIndex(x=>x.id===p.id);if(i>=0)products[i]=res;closeM("modal-fix");renderFixPanel(res);updateStats();renderProducts();document.getElementById("dt-fix-btn").click();showToast("🔧 修改請求已送出","info");}
 }
-
 function renderFixPanel(p){
   const fixes=p.fixRequests||[];
   const open=fixes.filter(f=>!f.resolved).length;
@@ -914,12 +884,11 @@ function renderFixPanel(p){
       ${f.resolved?`<div style="font-size:10px;color:var(--green);margin-top:4px">✓ 已解決</div>`:""}
     </div>`).join("");
 }
-
 async function resolveFix(pid,idx){
   const p=products.find(x=>x.id===pid);
-  const newFixes=p.fixRequests.map((f,i)=>i===idx?{...f,resolved:true}:f);
-  const allDone=!newFixes.some(f=>!f.resolved);
-  const res=await api(`/products/${pid}`,"PATCH",{...p,fixRequests:newFixes,status:allDone?"done":"fix"});
+  const nf=p.fixRequests.map((f,i)=>i===idx?{...f,resolved:true}:f);
+  const allDone=!nf.some(f=>!f.resolved);
+  const res=await api(`/products/${pid}`,"PATCH",{...p,fixRequests:nf,status:allDone?"done":"fix"});
   if(res){const i=products.findIndex(x=>x.id===pid);if(i>=0)products[i]=res;renderFixPanel(res);updateStats();renderProducts();showToast("✅ 已標記解決","success");}
 }
 
@@ -928,66 +897,53 @@ async function resolveFix(pid,idx){
 // ════════════════════════════════════════
 function openNewProduct(){
   if(!isAdmin)return;
-  editingId=null; pendingImgUrl=""; pendingStlUrl="";
+  editingId=null;pendingImgUrl="";pendingStlUrl="";
   document.getElementById("form-title").textContent="新增產品";
-  document.getElementById("f-name").value="";
-  document.getElementById("f-desc").value="";
-  document.getElementById("f-ver").value="v1.0";
-  document.getElementById("f-change").value="初版";
+  document.getElementById("f-name").value="";document.getElementById("f-desc").value="";
+  document.getElementById("f-ver").value="v1.0";document.getElementById("f-change").value="初版";
   document.getElementById("f-status").value="done";
   document.getElementById("f-imgpreview").style.display="none";
   document.getElementById("img-uplbl").textContent="拖曳或點擊上傳圖片";
-  document.getElementById("stl-uplbl").textContent="拖曳或點擊上傳 STL / OBJ / 3MF";
+  document.getElementById("stl-uplbl").textContent="拖曳或點擊上傳 STL / OBJ";
   document.getElementById("stl-current").style.display="none";
-  selectedTags=[]; renderTagChips(); populateRecMat();
+  selectedTags=[];renderTagChips();populateRecMat();
   openM("modal-form");
 }
-
 function openEditProduct(id){
   if(!isAdmin)return;
-  const p=products.find(x=>x.id===id); if(!p)return;
+  const p=products.find(x=>x.id===id);if(!p)return;
   const curVd=p.versions?.find(v=>v.ver===p.curVer);
-  editingId=id; pendingImgUrl=curVd?.imageUrl||""; pendingStlUrl="";
+  editingId=id;pendingImgUrl=curVd?.imageUrl||"";pendingStlUrl="";
   document.getElementById("form-title").textContent="編輯產品";
-  document.getElementById("f-name").value=p.name;
-  document.getElementById("f-desc").value=p.desc||"";
-  document.getElementById("f-ver").value=p.curVer;
-  document.getElementById("f-change").value="";
+  document.getElementById("f-name").value=p.name;document.getElementById("f-desc").value=p.desc||"";
+  document.getElementById("f-ver").value=p.curVer;document.getElementById("f-change").value="";
   document.getElementById("f-status").value=p.status||"done";
   const prev=document.getElementById("f-imgpreview");
   if(curVd?.imageUrl){prev.src=curVd.imageUrl;prev.style.display="";}else prev.style.display="none";
   document.getElementById("img-uplbl").textContent=curVd?.imageUrl?"重新上傳圖片（選填）":"拖曳或點擊上傳圖片";
   document.getElementById("stl-uplbl").textContent="拖曳或點擊上傳新版 STL（選填）";
   const sc=document.getElementById("stl-current");
-  if(curVd?.stlUrl){sc.style.display="";sc.innerHTML=`📦 目前版本有 STL：<a href="${curVd.stlUrl}" target="_blank" style="color:var(--a2)">下載</a>`;}
-  else sc.style.display="none";
-  selectedTags=[...p.tags]; renderTagChips();
-  populateRecMat(); document.getElementById("f-recmat").value=p.recMat||"";
+  if(curVd?.stlUrl){sc.style.display="";sc.innerHTML=`📦 目前版本有 STL：<a href="${curVd.stlUrl}" target="_blank" style="color:var(--a2)">下載</a>`;}else sc.style.display="none";
+  selectedTags=[...p.tags];renderTagChips();populateRecMat();document.getElementById("f-recmat").value=p.recMat||"";
   openM("modal-form");
 }
-
 function openVerUpdate(pid){
   if(!isAdmin)return;
   const p=products.find(x=>x.id===pid);
   const curVd=p.versions?.find(v=>v.ver===p.curVer);
-  // inherit current version's image as default for new version
-  editingId=pid; pendingImgUrl=curVd?.imageUrl||""; pendingStlUrl="";
+  editingId=pid;pendingImgUrl=curVd?.imageUrl||"";pendingStlUrl="";
   document.getElementById("form-title").textContent=`↑ 更新版本：${p.name}`;
-  document.getElementById("f-name").value=p.name;
-  document.getElementById("f-desc").value=p.desc||"";
-  document.getElementById("f-ver").value=bumpVer(p.curVer);
-  document.getElementById("f-change").value="";
+  document.getElementById("f-name").value=p.name;document.getElementById("f-desc").value=p.desc||"";
+  document.getElementById("f-ver").value=bumpVer(p.curVer);document.getElementById("f-change").value="";
   document.getElementById("f-status").value=p.status||"done";
   const prev=document.getElementById("f-imgpreview");
   if(curVd?.imageUrl){prev.src=curVd.imageUrl;prev.style.display="";}else prev.style.display="none";
   document.getElementById("img-uplbl").textContent=curVd?.imageUrl?"更換圖片（選填，不換則沿用上一版）":"拖曳或點擊上傳圖片";
   document.getElementById("stl-uplbl").textContent="上傳新版本 STL（強烈建議）";
   document.getElementById("stl-current").style.display="none";
-  selectedTags=[...p.tags]; renderTagChips();
-  populateRecMat(); document.getElementById("f-recmat").value=p.recMat||"";
+  selectedTags=[...p.tags];renderTagChips();populateRecMat();document.getElementById("f-recmat").value=p.recMat||"";
   openM("modal-form");
 }
-
 const bumpVer=v=>{const m=v.match(/v(\d+)\.(\d+)/);return m?`v${m[1]}.${parseInt(m[2])+1}`:v+".1";};
 function populateRecMat(){document.getElementById("f-recmat").innerHTML="<option value=''>不指定</option>"+settings.materials.map(m=>`<option value="${m}">${m}</option>`).join("");}
 
@@ -998,34 +954,16 @@ async function saveProduct(){
   const now=new Date().toISOString().split("T")[0];
   const ver=document.getElementById("f-ver").value.trim()||"v1.0";
   const note=document.getElementById("f-change").value.trim()||"更新";
-
+  const newVersion={ver,note,date:now,stlUrl:pendingStlUrl||"",imageUrl:pendingImgUrl||""};
+  const payload={name,desc:document.getElementById("f-desc").value.trim(),tags:[...selectedTags],curVer:ver,recMat:document.getElementById("f-recmat").value,status:document.getElementById("f-status").value,updatedAt:now,fixRequests:editingId?(products.find(p=>p.id===editingId)?.fixRequests||[]):[],newVersion};
   setBtnLoading("save-btn",true);
-
-  // Build newVersion object — image now lives here, not on the product
-  const newVersion={ ver, note, date:now, stlUrl:pendingStlUrl||"", imageUrl:pendingImgUrl||"" };
-
-  const payload={
-    name,
-    desc:document.getElementById("f-desc").value.trim(),
-    tags:[...selectedTags],
-    curVer:ver,
-    recMat:document.getElementById("f-recmat").value,
-    status:document.getElementById("f-status").value,
-    updatedAt:now,
-    fixRequests: editingId ? (products.find(p=>p.id===editingId)?.fixRequests||[]) : [],
-    newVersion,
-  };
-
   let res;
   if(editingId){
     res=await api(`/products/${editingId}`,"PATCH",payload);
     if(res){const i=products.findIndex(p=>p.id===editingId);if(i>=0)products[i]=res;showToast("✅ 產品已更新","success");}
-  } else {
+  }else{
     res=await api("/products","POST",payload);
-    if(res){
-      if(res.merged){const i=products.findIndex(p=>p.id===res.id);if(i>=0)products[i]=res;showToast(`🔀 已合併到「${name}」版本 ${ver}`,"success");}
-      else{products.unshift(res);showToast("✅ 產品已新增","success");}
-    }
+    if(res){if(res.merged){const i=products.findIndex(p=>p.id===res.id);if(i>=0)products[i]=res;showToast(`🔀 已合併到「${name}」版本 ${ver}`,"success");}else{products.unshift(res);showToast("✅ 產品已新增","success");}}
   }
   setBtnLoading("save-btn",false);
   if(res){closeM("modal-form");render();}
@@ -1049,52 +987,39 @@ function showTDD(){
   const v=document.getElementById("tii").value.toLowerCase();
   const dd=document.getElementById("tdd");
   const opts=settings.allTags.filter(t=>!selectedTags.includes(t)&&t.toLowerCase().includes(v));
-  let html=opts.map(t=>`<div class="tdi" onmousedown="pickTag('${t}')">${t}</div>`).join("");
-  if(v&&!settings.allTags.find(t=>t.toLowerCase()===v))html+=`<div class="tdi tdn" onmousedown="pickTag('${v}',true)">＋ 新增「${v}」</div>`;
-  dd.innerHTML=html||`<div class="tdi" style="color:var(--dimmer)">沒有符合的標籤</div>`;
-  dd.style.display="";
+  let h=opts.map(t=>`<div class="tdi" onmousedown="pickTag('${t}')">${t}</div>`).join("");
+  if(v&&!settings.allTags.find(t=>t.toLowerCase()===v))h+=`<div class="tdi tdn" onmousedown="pickTag('${v}',true)">＋ 新增「${v}」</div>`;
+  dd.innerHTML=h||`<div class="tdi" style="color:var(--dimmer)">沒有符合的標籤</div>`;dd.style.display="";
 }
 function hideTDD(){document.getElementById("tdd").style.display="none";}
-function pickTag(t,isNew){
-  if(isNew&&!settings.allTags.includes(t)){settings.allTags.push(t);}
-  if(!selectedTags.includes(t))selectedTags.push(t);
-  renderTagChips();document.getElementById("tii").value="";hideTDD();
-}
-function tagIK(e){
-  const v=document.getElementById("tii").value.trim();
-  if((e.key==="Enter"||e.key===",")&&v){e.preventDefault();pickTag(v,!settings.allTags.includes(v));}
-  if(e.key==="Backspace"&&!v&&selectedTags.length){selectedTags.pop();renderTagChips();}
-}
+function pickTag(t,isNew){if(isNew&&!settings.allTags.includes(t))settings.allTags.push(t);if(!selectedTags.includes(t))selectedTags.push(t);renderTagChips();document.getElementById("tii").value="";hideTDD();}
+function tagIK(e){const v=document.getElementById("tii").value.trim();if((e.key==="Enter"||e.key===",")&&v){e.preventDefault();pickTag(v,!settings.allTags.includes(v));}if(e.key==="Backspace"&&!v&&selectedTags.length){selectedTags.pop();renderTagChips();}}
 
 // ════════════════════════════════════════
-//  THREE.JS STL VIEWER (loads from URL)
+//  THREE.JS
 // ════════════════════════════════════════
 function parseSTL(buf){
   const geom=new THREE.BufferGeometry(),dv=new DataView(buf);
   const isAscii=new TextDecoder().decode(buf.slice(0,256)).includes("facet");
   if(isAscii){
-    const lines=new TextDecoder().decode(buf).split("\n"),v=[],n=[];let ni=[0,0,0];
-    for(const l of lines){const t=l.trim();if(t.startsWith("facet normal")){const p=t.split(/\s+/);ni=[+p[2],+p[3],+p[4]];}else if(t.startsWith("vertex")){const p=t.split(/\s+/);v.push(+p[1],+p[2],+p[3]);n.push(...ni);}}
+    const lines=new TextDecoder().decode(buf).split("\n"),v=[],nr=[];let ni=[0,0,0];
+    for(const l of lines){const t=l.trim();if(t.startsWith("facet normal")){const p=t.split(/\s+/);ni=[+p[2],+p[3],+p[4]];}else if(t.startsWith("vertex")){const p=t.split(/\s+/);v.push(+p[1],+p[2],+p[3]);nr.push(...ni);}}
     geom.setAttribute("position",new THREE.BufferAttribute(new Float32Array(v),3));
-    geom.setAttribute("normal",new THREE.BufferAttribute(new Float32Array(n),3));
+    geom.setAttribute("normal",new THREE.BufferAttribute(new Float32Array(nr),3));
   }else{
-    const num=dv.getUint32(80,true),v=new Float32Array(num*9),n=new Float32Array(num*9);let off=84;
-    for(let i=0;i<num;i++){const nx=dv.getFloat32(off,true),ny=dv.getFloat32(off+4,true),nz=dv.getFloat32(off+8,true);off+=12;for(let j=0;j<3;j++){const b=i*9+j*3;v[b]=dv.getFloat32(off,true);v[b+1]=dv.getFloat32(off+4,true);v[b+2]=dv.getFloat32(off+8,true);n[b]=nx;n[b+1]=ny;n[b+2]=nz;off+=12;}off+=2;}
-    geom.setAttribute("position",new THREE.BufferAttribute(v,3));
-    geom.setAttribute("normal",new THREE.BufferAttribute(n,3));
+    const num=dv.getUint32(80,true),v=new Float32Array(num*9),nr=new Float32Array(num*9);let off=84;
+    for(let i=0;i<num;i++){const nx=dv.getFloat32(off,true),ny=dv.getFloat32(off+4,true),nz=dv.getFloat32(off+8,true);off+=12;for(let j=0;j<3;j++){const b=i*9+j*3;v[b]=dv.getFloat32(off,true);v[b+1]=dv.getFloat32(off+4,true);v[b+2]=dv.getFloat32(off+8,true);nr[b]=nx;nr[b+1]=ny;nr[b+2]=nz;off+=12;}off+=2;}
+    geom.setAttribute("position",new THREE.BufferAttribute(v,3));geom.setAttribute("normal",new THREE.BufferAttribute(nr,3));
   }
   return geom;
 }
-
 function viewer(el,stlUrl,interactive){
   const w=el.clientWidth||260,h=el.clientHeight||160;
   const r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setSize(w,h);r.setPixelRatio(Math.min(devicePixelRatio,2));
   const s=new THREE.Scene(),c=new THREE.PerspectiveCamera(45,w/h,.01,100000);
-  s.add(new THREE.AmbientLight(0xffffff,.5));
-  const d=new THREE.DirectionalLight(0xffffff,1);d.position.set(1,2,3);s.add(d);
+  s.add(new THREE.AmbientLight(0xffffff,.5));const d=new THREE.DirectionalLight(0xffffff,1);d.position.set(1,2,3);s.add(d);
   const d2=new THREE.DirectionalLight(0x47b8ff,.25);d2.position.set(-2,-1,1);s.add(d2);
   el.innerHTML="";el.appendChild(r.domElement);
-
   fetch(stlUrl).then(x=>x.arrayBuffer()).then(buf=>{
     const geom=parseSTL(buf);geom.computeBoundingBox();
     const box=geom.boundingBox,cx=(box.max.x+box.min.x)/2,cy=(box.max.y+box.min.y)/2,cz=(box.max.z+box.min.z)/2;
@@ -1113,56 +1038,174 @@ function viewer(el,stlUrl,interactive){
       window.addEventListener("touchmove",e=>{if(!drag)return;ry+=(e.touches[0].clientX-last.x)*.005;rx+=(e.touches[0].clientY-last.y)*.005;last={x:e.touches[0].clientX,y:e.touches[0].clientY};});
     }
     (function frame(){requestAnimationFrame(frame);if(!drag)ry+=.005;mesh.rotation.x=rx;mesh.rotation.y=ry;r.render(s,c);})();
-  }).catch(()=>{el.innerHTML=`<div class="pholder"><div class="icon">⚠️</div><div style="font-size:11px">無法載入 STL</div></div>`;});
+  }).catch(()=>{el.innerHTML=`<div class="pholder"><div class="icon">⚠️</div><div style="font-size:11px">無法載入</div></div>`;});
 }
-
 function initMini(el,stlUrl){viewer(el,stlUrl,false);}
 function initDetailViewer(el,stlUrl){viewer(el,stlUrl,true);}
+
+// ════════════════════════════════════════
+//  BATCH ORDER
+// ════════════════════════════════════════
+let batchRows=[];  // [{productId, ver, mat, color, qty}]
+
+function renderNewOrder(){
+  // group quick-add buttons
+  const bar=document.getElementById("group-quick-bar");
+  const btns=document.getElementById("group-quick-btns");
+  if(groups.length){
+    bar.style.display="";
+    btns.innerHTML=groups.map(g=>`<button class="btn bs bsm" onclick="addGroupToOrder('${g.id}')">${g.name} <span style="color:var(--dimmer);font-size:10px">(${g.productIds.length}項)</span></button>`).join("");
+  }else bar.style.display="none";
+  // init with one empty row
+  batchRows=[];
+  addBatchRow();
+  document.getElementById("batch-date").value=new Date().toISOString().split("T")[0];
+  document.getElementById("batch-note").value="";
+}
+
+function addGroupToOrder(groupId){
+  const g=groups.find(x=>x.id===groupId);
+  if(!g)return;
+  g.productIds.forEach(pid=>{
+    const p=products.find(x=>x.id===pid);
+    if(p) addBatchRow(p.id);
+  });
+  showToast(`✅ 已加入「${g.name}」的 ${g.productIds.length} 個零件`,"success");
+}
+
+function addBatchRow(productId=""){
+  const id="br-"+Date.now()+"-"+Math.random().toString(36).slice(2,6);
+  batchRows.push({id,productId,ver:"",mat:settings.materials[0]||"",color:"",qty:1});
+  renderBatchRows();
+  // pre-select product if given
+  if(productId){
+    setTimeout(()=>{
+      const sel=document.getElementById(`${id}-product`);
+      if(sel){sel.value=productId;onBatchProductChange(id);}
+    },50);
+  }
+}
+
+function removeBatchRow(id){
+  batchRows=batchRows.filter(r=>r.id!==id);
+  if(!batchRows.length) addBatchRow();
+  else renderBatchRows();
+}
+
+function renderBatchRows(){
+  const container=document.getElementById("batch-rows");
+  container.innerHTML=batchRows.map(row=>`
+    <div class="batch-row" id="row-${row.id}">
+      <div>
+        <div class="fl">產品</div>
+        <select id="${row.id}-product" onchange="onBatchProductChange('${row.id}')">
+          <option value="">— 請選擇 —</option>
+          ${products.map(p=>`<option value="${p.id}" ${p.id===row.productId?"selected":""}>${p.name}</option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <div class="fl">版本</div>
+        <select id="${row.id}-ver">${getBatchVerOpts(row.productId,row.ver)}</select>
+      </div>
+      <div>
+        <div class="fl">材料</div>
+        <select id="${row.id}-mat" onchange="onBatchMatChange('${row.id}')">
+          ${settings.materials.map(m=>`<option value="${m}" ${m===row.mat?"selected":""}>${m}</option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <div class="fl">顏色</div>
+        <select id="${row.id}-color">${getBatchColorOpts(row.mat,row.color)}</select>
+      </div>
+      <div>
+        <div class="fl">數量</div>
+        <input type="number" id="${row.id}-qty" value="${row.qty||1}" min="1" style="width:60px">
+      </div>
+      <button class="batch-del-btn" onclick="removeBatchRow('${row.id}')" title="刪除此行">×</button>
+    </div>`).join("");
+}
+
+function getBatchVerOpts(productId, selectedVer){
+  const p=products.find(x=>x.id===productId);
+  if(!p||(p.versions||[]).length===0)return `<option value="">—</option>`;
+  return p.versions.map(v=>`<option value="${v.ver}" ${v.ver===(selectedVer||p.curVer)?"selected":""}>${v.ver}${v.ver===p.curVer?" ★":""}</option>`).join("");
+}
+
+function getBatchColorOpts(mat, selectedColor){
+  const bound=settings.matColors[mat];
+  const avail=bound&&bound.length?settings.colors.filter(c=>bound.includes(c.name)):settings.colors;
+  if(!avail.length)return `<option value="">—</option>`;
+  return avail.map(c=>`<option value="${c.name}" ${c.name===selectedColor?"selected":""}>${c.name}</option>`).join("");
+}
+
+function onBatchProductChange(rowId){
+  const pid=document.getElementById(`${rowId}-product`)?.value;
+  const p=products.find(x=>x.id===pid);
+  const verSel=document.getElementById(`${rowId}-ver`);
+  if(verSel) verSel.innerHTML=getBatchVerOpts(pid,"");
+  if(p?.recMat){
+    const matSel=document.getElementById(`${rowId}-mat`);
+    if(matSel){matSel.value=p.recMat;onBatchMatChange(rowId);}
+  }
+}
+
+function onBatchMatChange(rowId){
+  const mat=document.getElementById(`${rowId}-mat`)?.value;
+  const colorSel=document.getElementById(`${rowId}-color`);
+  if(colorSel) colorSel.innerHTML=getBatchColorOpts(mat,"");
+}
+
+async function submitBatchOrder(){
+  // collect rows
+  const items=batchRows.map(row=>({
+    productId:  document.getElementById(`${row.id}-product`)?.value,
+    productName:products.find(x=>x.id===document.getElementById(`${row.id}-product`)?.value)?.name||"",
+    ver:        document.getElementById(`${row.id}-ver`)?.value||"",
+    material:   document.getElementById(`${row.id}-mat`)?.value||"",
+    color:      document.getElementById(`${row.id}-color`)?.value||"",
+    qty:        parseInt(document.getElementById(`${row.id}-qty`)?.value)||1,
+  })).filter(item=>item.productId);
+
+  if(!items.length){showToast("❗ 請至少選擇一個產品","info");return;}
+
+  const date=document.getElementById("batch-date").value;
+  const note=document.getElementById("batch-note").value.trim();
+
+  // If only one item, submit as simple order for backward compat
+  setBtnLoading("submit-order-btn",true);
+  let res;
+  if(items.length===1){
+    const it=items[0];
+    res=await api("/orders","POST",{
+      productId:it.productId,productName:it.productName,productVer:it.ver,
+      color:it.color,material:it.material,qty:it.qty,note,status:"unread",date,items:[],
+    });
+  } else {
+    // Batch order
+    const batchLabel=items.length<=3 ? items.map(i=>i.productName).join("、") : `批量訂單（${items.length}項）`;
+    res=await api("/orders","POST",{
+      productId:"",productName:batchLabel,productVer:"",
+      color:"",material:"",qty:1,note,status:"unread",date,
+      items,batchLabel,
+    });
+  }
+  setBtnLoading("submit-order-btn",false);
+  if(res){orders.push(res);updateStats();showToast(`🖨️ 下單成功！共 ${items.length} 項`,"success");go("orders");}
+}
+
+function quickOrder(pid){
+  go("neworder");
+  setTimeout(()=>{
+    // clear and add one row for this product
+    batchRows=[];
+    addBatchRow(pid);
+  },60);
+}
 
 // ════════════════════════════════════════
 //  ORDERS
 // ════════════════════════════════════════
 const OS_LIST=[{key:"unread",label:"未讀"},{key:"received",label:"收到"},{key:"printing",label:"列印中"},{key:"done",label:"已完成"},{key:"delivered",label:"收到成品"}];
-
-function renderOrderForm(){
-  document.getElementById("op-product").innerHTML="<option value=''>— 請選擇 —</option>"+products.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
-  document.getElementById("op-mat").innerHTML=settings.materials.map(m=>`<option value="${m}">${m}</option>`).join("");
-  onMatChange();
-  document.getElementById("op-date").value=new Date().toISOString().split("T")[0];
-  document.getElementById("op-note").value="";
-  document.getElementById("op-verhint").textContent="";
-  document.getElementById("op-ver").innerHTML="";
-}
-
-function onProductChange(){
-  const pid=document.getElementById("op-product").value;
-  const p=products.find(x=>x.id===pid);
-  if(p){
-    document.getElementById("op-ver").innerHTML=(p.versions||[]).map(v=>`<option value="${v.ver}" ${v.ver===p.curVer?"selected":""}>${v.ver}${v.ver===p.curVer?" (最新)":""}</option>`).join("");
-    document.getElementById("op-verhint").textContent=`建議材料：${p.recMat||"未指定"}`;
-    if(p.recMat&&settings.materials.includes(p.recMat)){document.getElementById("op-mat").value=p.recMat;onMatChange();}
-  }else{document.getElementById("op-ver").innerHTML="";document.getElementById("op-verhint").textContent="";}
-}
-
-function onMatChange(){
-  const mat=document.getElementById("op-mat").value;
-  const bound=settings.matColors[mat];
-  const avail=bound&&bound.length?settings.colors.filter(c=>bound.includes(c.name)):settings.colors;
-  document.getElementById("op-color").innerHTML=avail.map(c=>`<option value="${c.name}">${c.name}</option>`).join("");
-}
-
-async function submitOrder(){
-  const pid=document.getElementById("op-product").value;
-  if(!pid){showToast("❗ 請選擇產品","info");return;}
-  const p=products.find(x=>x.id===pid);
-  const data={productId:pid,productName:p.name,productVer:document.getElementById("op-ver").value,color:document.getElementById("op-color").value,material:document.getElementById("op-mat").value,qty:parseInt(document.getElementById("op-qty").value)||1,note:document.getElementById("op-note").value.trim(),status:"unread",date:document.getElementById("op-date").value};
-  setBtnLoading("submit-order-btn",true);
-  const res=await api("/orders","POST",data);
-  setBtnLoading("submit-order-btn",false);
-  if(res){orders.push(res);updateStats();showToast("🖨️ 下單成功！","success");go("orders");}
-}
-
-function quickOrder(pid){go("neworder");setTimeout(()=>{document.getElementById("op-product").value=pid;onProductChange();},60);}
 
 function renderOrders(){
   const today=new Date().toISOString().split("T")[0];
@@ -1178,13 +1221,17 @@ function renderOrders(){
   empty.style.display="none";
   tbody.innerHTML=sorted.map(o=>{
     const ov=o.date&&o.date<today&&!["done","delivered"].includes(o.status);
+    const isBatch=o.items&&o.items.length>0;
     const cc=settings.colors.find(c=>c.name===o.color);
+    const nameHtml=isBatch
+      ?`<div style="font-weight:600">${o.productName}</div><div class="batch-items">${o.items.map(i=>`<div class="batch-item-row">• ${i.productName} ${i.ver} · ${i.material} ${i.color} ×${i.qty}</div>`).join("")}</div>`
+      :`<div style="font-weight:600">${o.productName}</div>${o.productUpdated?`<div style="font-size:10px;color:var(--orange)">⚠ 產品已更新</div>`:""}`;
     return `<tr>
-      <td><div style="font-weight:600">${o.productName}</div>${o.productUpdated?`<div style="font-size:10px;color:var(--orange)">⚠ 產品已更新</div>`:""}</td>
-      <td><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--dimmer)">${o.productVer||""}</span></td>
-      <td><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:${cc?cc.hex:"#888"};border:1px solid rgba(255,255,255,.2)"></span>${o.color}</span></td>
-      <td><span class="tag">${o.material}</span></td>
-      <td>${o.qty} 組</td>
+      <td>${nameHtml}</td>
+      <td><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--dimmer)">${isBatch?"—":o.productVer||""}</span></td>
+      <td>${isBatch?"—":`<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:${cc?cc.hex:"#888"};border:1px solid rgba(255,255,255,.2)"></span>${o.color}</span>`}</td>
+      <td>${isBatch?"—":`<span class="tag">${o.material}</span>`}</td>
+      <td>${isBatch?`${o.items.reduce((a,i)=>a+i.qty,0)} 組合計`:`${o.qty} 組`}</td>
       <td style="color:var(--dim);font-size:12px;max-width:90px">${o.note||"—"}</td>
       <td><select style="padding:4px 8px;font-size:11px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;cursor:pointer" onchange="updateOS('${o.id}',this.value)">${OS_LIST.map(s=>`<option value="${s.key}" ${o.status===s.key?"selected":""}>${s.label}</option>`).join("")}</select></td>
       <td style="font-size:12px;${ov?"color:var(--red);font-weight:600":"color:var(--dimmer)"}">${o.date||"—"}${ov?" ⚠":""}</td>
@@ -1192,7 +1239,6 @@ function renderOrders(){
     </tr>`;
   }).join("");
 }
-
 async function updateOS(id,status){
   const o=orders.find(x=>x.id===id);if(!o)return;
   const res=await api(`/orders/${id}`,"PATCH",{...o,status,productUpdated:status==="received"?false:o.productUpdated});
@@ -1202,6 +1248,90 @@ async function delOrder(id){
   if(!isAdmin)return;
   const res=await api(`/orders/${id}`,"DELETE");
   if(res?.ok){orders=orders.filter(x=>x.id!==id);renderOrders();updateStats();showToast("🗑 已刪除","info");}
+}
+
+// ════════════════════════════════════════
+//  GROUPS
+// ════════════════════════════════════════
+function renderGroups(){
+  const el=document.getElementById("groups-list");
+  if(!groups.length){el.innerHTML=`<div class="empty"><div class="icon">🗂️</div><div class="ttl">還沒有群組</div><div class="sub">點「新增群組」把相關產品打包在一起</div></div>`;return;}
+  el.innerHTML=groups.map(g=>{
+    const names=g.productIds.map(id=>products.find(p=>p.id===id)?.name||"(已刪除)");
+    return `<div class="group-card">
+      <div>
+        <div class="group-name">${g.name}</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">${names.join(" · ")||"尚未加入產品"}</div>
+      </div>
+      <div class="group-actions">
+        <button class="btn bg bsm" onclick="addGroupToOrder('${g.id}')">🖨️ 加入下單</button>
+        <button class="btn bs bsm ao" onclick="openEditGroup('${g.id}')">✏️</button>
+        <button class="btn bd bsm ao" onclick="deleteGroup('${g.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function openNewGroup(){
+  editingGroupId=null;
+  selectedGroupProductIds=[];
+  document.getElementById("group-form-title").textContent="新增群組";
+  document.getElementById("g-name").value="";
+  document.getElementById("g-search").value="";
+  renderGroupProductPicker();
+  openM("modal-group");
+}
+function openEditGroup(id){
+  const g=groups.find(x=>x.id===id); if(!g)return;
+  editingGroupId=id;
+  selectedGroupProductIds=[...g.productIds];
+  document.getElementById("group-form-title").textContent="編輯群組";
+  document.getElementById("g-name").value=g.name;
+  document.getElementById("g-search").value="";
+  renderGroupProductPicker();
+  openM("modal-group");
+}
+
+function renderGroupProductPicker(){
+  const q=(document.getElementById("g-search").value||"").toLowerCase();
+  const list=products.filter(p=>!q||p.name.toLowerCase().includes(q));
+  document.getElementById("g-product-picker").innerHTML=list.map(p=>{
+    const sel=selectedGroupProductIds.includes(p.id);
+    return `<div onclick="toggleGroupProduct('${p.id}')" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;background:${sel?"rgba(232,255,71,.08)":"var(--s2)"};border:1px solid ${sel?"rgba(232,255,71,.3)":"var(--border)"};transition:all .15s">
+      <span style="font-size:16px">${sel?"✅":"⬜"}</span>
+      <span style="font-size:13px;font-weight:${sel?"600":"400"}">${p.name}</span>
+      <span style="font-size:11px;color:var(--dimmer);margin-left:auto">${p.curVer}</span>
+    </div>`;
+  }).join("");
+}
+
+function toggleGroupProduct(id){
+  const i=selectedGroupProductIds.indexOf(id);
+  if(i>=0)selectedGroupProductIds.splice(i,1);else selectedGroupProductIds.push(id);
+  renderGroupProductPicker();
+}
+
+async function saveGroup(){
+  const name=document.getElementById("g-name").value.trim();
+  if(!name){showToast("❗ 請填寫群組名稱","info");return;}
+  const data={name,productIds:selectedGroupProductIds};
+  setBtnLoading("group-save-btn",true);
+  let res;
+  if(editingGroupId){
+    res=await api(`/groups/${editingGroupId}`,"PATCH",data);
+    if(res){const i=groups.findIndex(g=>g.id===editingGroupId);if(i>=0)groups[i]=res;showToast("✅ 群組已更新","success");}
+  }else{
+    res=await api("/groups","POST",data);
+    if(res){groups.push(res);showToast("✅ 群組已新增","success");}
+  }
+  setBtnLoading("group-save-btn",false);
+  if(res){closeM("modal-group");renderGroups();}
+}
+
+async function deleteGroup(id){
+  if(!confirm("確定要刪除這個群組嗎？（產品本身不會被刪除）"))return;
+  const res=await api(`/groups/${id}`,"DELETE");
+  if(res?.ok){groups=groups.filter(g=>g.id!==id);renderGroups();showToast("🗑 群組已刪除","info");}
 }
 
 // ════════════════════════════════════════
@@ -1228,16 +1358,11 @@ async function saveSettings(){const res=await api("/settings","POST",settings);i
 // ════════════════════════════════════════
 //  UTILS
 // ════════════════════════════════════════
-function switchMTab(btn,panelId){
-  const m=btn.closest(".modal");
-  m.querySelectorAll(".tbb").forEach(b=>b.classList.remove("active"));
-  m.querySelectorAll(".tbp").forEach(p=>p.classList.remove("active"));
-  btn.classList.add("active");document.getElementById(panelId).classList.add("active");
-}
+function switchMTab(btn,panelId){const m=btn.closest(".modal");m.querySelectorAll(".tbb").forEach(b=>b.classList.remove("active"));m.querySelectorAll(".tbp").forEach(p=>p.classList.remove("active"));btn.classList.add("active");document.getElementById(panelId).classList.add("active");}
 function openM(id){document.getElementById(id).classList.add("open");}
 function closeM(id){document.getElementById(id).classList.remove("open");}
 document.querySelectorAll(".mo").forEach(el=>el.addEventListener("click",e=>{if(e.target===el)el.classList.remove("open");}));
-function setBtnLoading(id,loading){const el=document.getElementById(id);if(!el)return;el.disabled=loading;if(loading){el.dataset.orig=el.textContent;el.textContent="處理中…";}else{el.textContent=el.dataset.orig||el.textContent;}}
+function setBtnLoading(id,loading){const el=document.getElementById(id);if(!el)return;el.disabled=loading;if(loading){el.dataset.orig=el.textContent;el.textContent="處理中…";}else if(el.dataset.orig){el.textContent=el.dataset.orig;}}
 let toastT;
 function showToast(msg,type="info"){const el=document.getElementById("toast");el.textContent=msg;el.className=`toast ${type} show`;clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),3000);}
 </script>
